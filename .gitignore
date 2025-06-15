@@ -1,0 +1,27 @@
+# Results directories
+results/
+paper_results/
+sensitivity_results/
+system_comparison/
+
+# Julia files
+Manifest.toml
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.log

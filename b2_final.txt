@@ -1,0 +1,114 @@
+\n🚀 GAUSSIAN PROCESS KERNEL COMPARISON
+============================================================
+🎯 GENERATING TEST DATA FOR GP COMPARISON
+==================================================
+  Noise 0.0e+00: actual std = 0.00e+00
+  Noise 1.0e-04: actual std = 2.17e-04
+  Noise 1.0e-03: actual std = 2.24e-03
+  Noise 5.0e-03: actual std = 1.29e-02
+  Noise 1.0e-02: actual std = 2.11e-02
+  Noise 5.0e-02: actual std = 1.28e-01
+  Noise 1.0e-01: actual std = 2.20e-01
+\nTesting 4 GP variants:
+  - GP_RBF_Iso
+  - GP_Matern_1.5
+  - GP_Matern_2.5
+  - GP_Periodic
+\nNoise level 0.0e+00 (case 1/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\nNoise level 1.0e-04 (case 2/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\nNoise level 1.0e-03 (case 3/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\nNoise level 5.0e-03 (case 4/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\nNoise level 1.0e-02 (case 5/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\nNoise level 5.0e-02 (case 6/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\nNoise level 1.0e-01 (case 7/7):
+  Testing GP_RBF_Iso... ✓
+  Testing GP_Matern_1.5... ✓
+  Testing GP_Matern_2.5... ✓
+  Testing GP_Periodic... ✓
+\n🎉 GP COMPARISON COMPLETE!
+📁 Results saved to: results/gp_comparison_20250613_031406.csv
+\n📊 GP KERNEL COMPARISON ANALYSIS
+==================================================
+Total evaluations: 112
+Successful evaluations: 112 (100.0%)
+\n🎯 FUNCTION APPROXIMATION BY NOISE LEVEL:
+\n  📈 Noise level 0.0e+00:
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 7.02e-09
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 5.57e-04
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 2.06e-03
+    GP_Periodic     (periodic    ): RMSE = 2.39e+00
+\n  📈 Noise level 1.0e-04:
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 2.19e-04
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 5.36e-04
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 2.05e-03
+    GP_Periodic     (periodic    ): RMSE = 2.39e+00
+\n  📈 Noise level 1.0e-03:
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 9.66e-04
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 2.24e-03
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 2.39e-03
+    GP_Periodic     (periodic    ): RMSE = 2.39e+00
+\n  📈 Noise level 5.0e-03:
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 5.72e-03
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 7.82e-03
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 1.29e-02
+    GP_Periodic     (periodic    ): RMSE = 2.39e+00
+\n  📈 Noise level 1.0e-02:
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 1.32e-02
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 1.41e-02
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 2.10e-02
+    GP_Periodic     (periodic    ): RMSE = 2.39e+00
+\n  📈 Noise level 5.0e-02:
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 6.04e-02
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 6.92e-02
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 8.22e-02
+    GP_Periodic     (periodic    ): RMSE = 2.14e+00
+\n  📈 Noise level 1.0e-01:
+    GP_RBF_Iso      (rbf_iso     ): RMSE = 9.14e-02
+    GP_Matern_2.5   (matern_2.5  ): RMSE = 1.12e-01
+    GP_Matern_1.5   (matern_1.5  ): RMSE = 1.23e-01
+    GP_Periodic     (periodic    ): RMSE = 2.38e+00
+\n🛡️  NOISE ROBUSTNESS RANKING:
+(Performance degradation from clean to highest noise)
+
+🏆 MOST ROBUST GP KERNELS:
+  GP_Periodic     (periodic    ):    1.0x (2.39e+00 → 2.38e+00)
+  GP_Matern_2.5   (matern_2.5  ):   54.3x (2.06e-03 → 1.12e-01)
+  GP_RBF_Iso      (rbf_iso     ):  164.1x (5.57e-04 → 9.14e-02)
+  GP_Matern_1.5   (matern_1.5  ): 17492136.7x (7.02e-09 → 1.23e-01)
+\n🎖️  BEST GP KERNEL BY DERIVATIVE ORDER:
+  Order 0: GP_RBF_Iso      (rbf_iso     ) - RMSE = 2.47e-02
+  Order 1: GP_RBF_Iso      (rbf_iso     ) - RMSE = 7.46e-02
+  Order 2: GP_RBF_Iso      (rbf_iso     ) - RMSE = 3.32e-01
+  Order 3: GP_RBF_Iso      (rbf_iso     ) - RMSE = 2.67e+00
+\n🔬 MATÉRN SMOOTHNESS PARAMETER COMPARISON:
+  Function approximation (average across noise levels):
+    Matérn ν=2.5: RMSE = 2.99e-02
+    Matérn ν=1.5: RMSE = 3.45e-02
+\n🎯 GP KERNEL COMPARISON COMPLETE!
+This should show whether RBF (isotropic) beats Matérn
+and which Matérn smoothness parameter works best
+Results: results/gp_comparison_20250613_031406.csv

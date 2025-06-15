@@ -1,0 +1,4 @@
+method,total_runs,high_error_runs,nan_runs,failure_rate
+AAA,120,19,0,15.833333333333332
+GPR,120,0,0,0.0
+LOESS,120,27,0,22.5

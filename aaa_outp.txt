@@ -1,0 +1,92 @@
+AAA Derivative Testing Script
+Testing potential bugs in derivative calculations
+
+============================================================
+Testing AAA approximation for e^(2x)
+============================================================
+
+1. Using aaad (high precision):
+
+2. Using BaryRational.aaa directly:
+
+3. Testing derivatives at 40 points:
+
+  Derivative order 0:
+    Old AD errors - Mean: 5.09e-16, Max: 2.66e-15
+    New AD errors - Mean: 4.53e-16, Max: 2.22e-15
+
+  Derivative order 1:
+    Old AD errors - Mean: 1.19e-14, Max: 6.22e-14
+    New AD errors - Mean: 2.19e-02, Max: 6.05e-01
+
+  Derivative order 2:
+    Old AD errors - Mean: 1.09e-12, Max: 9.97e-12
+    New AD errors - Mean: 4.38e-02, Max: 1.21e+00
+
+  Derivative order 3:
+    Old AD errors - Mean: 1.34e-10, Max: 1.16e-09
+    New AD errors - Mean: 8.75e-02, Max: 2.42e+00
+
+  Derivative order 4:
+    Old AD errors - Mean: 9.28e-07, Max: 2.05e-05
+    New AD errors - Mean: 1.75e-01, Max: 4.84e+00
+
+  Derivative order 5:
+    Old AD errors - Mean: 2.55e-03, Max: 6.61e-02
+    New AD errors - Mean: 3.53e-01, Max: 9.68e+00
+
+4. Checking derivatives at a support point:
+   Testing at support point x = -1.000000
+     d^0: New AD error = 0.00e+00
+     d^1: New AD error = 2.71e-01
+     d^2: New AD error = 5.41e-01
+     d^3: New AD error = 1.08e+00
+     d^4: New AD error = 2.17e+00
+     d^5: New AD error = 4.33e+00
+
+============================================================
+Testing AAA approximation for x^6
+============================================================
+
+1. Using aaad (high precision):
+
+2. Using BaryRational.aaa directly:
+
+3. Testing derivatives at 40 points:
+
+  Derivative order 0:
+    Old AD errors - Mean: 1.11e-16, Max: 4.16e-16
+    New AD errors - Mean: 1.25e-16, Max: 5.27e-16
+
+  Derivative order 1:
+    Old AD errors - Mean: 1.47e-15, Max: 8.88e-15
+    New AD errors - Mean: 1.50e-01, Max: 6.00e+00
+
+  Derivative order 2:
+    Old AD errors - Mean: 2.11e-13, Max: 7.21e-12
+    New AD errors - Mean: 7.50e-01, Max: 3.00e+01
+
+  Derivative order 3:
+    Old AD errors - Mean: 5.19e-11, Max: 1.99e-09
+    New AD errors - Mean: 3.00e+00, Max: 1.20e+02
+
+  Derivative order 4:
+    Old AD errors - Mean: 2.04e-07, Max: 8.15e-06
+    New AD errors - Mean: 9.00e+00, Max: 3.60e+02
+
+  Derivative order 5:
+    Old AD errors - Mean: 1.61e-03, Max: 6.44e-02
+    New AD errors - Mean: 1.80e+01, Max: 7.20e+02
+
+4. Checking derivatives at a support point:
+   Testing at support point x = -1.000000
+     d^0: New AD error = 0.00e+00
+     d^1: New AD error = 6.00e+00
+     d^2: New AD error = 3.00e+01
+     d^3: New AD error = 1.20e+02
+     d^4: New AD error = 3.60e+02
+     d^5: New AD error = 7.20e+02
+
+============================================================
+Testing complete!
+============================================================

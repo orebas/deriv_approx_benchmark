@@ -1,0 +1,124 @@
+\n🚀 PROPER NOISY DATA BENCHMARK
+============================================================
+🎯 GENERATING PROPER NOISY TEST CASES
+==================================================
+Using results/sweep_lv_periodic_n0.0001_d101.csv as clean reference
+Clean reference data: 101 points, t=[0.00, 15.00]
+  Noise level 0.0e+00: actual std = 0.00e+00
+  Noise level 1.0e-04: actual std = 2.14e-04
+  Noise level 1.0e-03: actual std = 2.21e-03
+  Noise level 5.0e-03: actual std = 1.27e-02
+  Noise level 1.0e-02: actual std = 2.09e-02
+  Noise level 5.0e-02: actual std = 1.27e-01
+\nTesting 14 methods on 6 noise levels
+\nNoise level 0.0e+00 (case 1/6):
+    CubicSpline    : RMSE=4.42e-17
+    SmoothingSpline: RMSE=3.15e-02
+WARNING: Analytical derivatives for RBF_ThinPlate are not implemented. Returning NaNs.
+    RBF_ThinPlate  : RMSE=2.02e-12
+    Chebyshev      : RMSE=8.51e-01
+    Polynomial     : RMSE=2.24e+00
+    SavitzkyGolay  : RMSE=1.03e+00
+    Butterworth    : RMSE=2.45e+00
+WARNING: RandomForest is not suitable for derivative calculation. Returning NaNs.
+    RandomForest   : RMSE=2.07e-01
+    SVR            : RMSE=2.46e+00
+    Fourier        : RMSE=3.45e-01
+    FiniteDiff     : RMSE=4.42e-17
+\nNoise level 1.0e-04 (case 2/6):
+WARNING: Analytical derivatives for RBF_ThinPlate are not implemented. Returning NaNs.
+WARNING: RandomForest is not suitable for derivative calculation. Returning NaNs.
+\nNoise level 1.0e-03 (case 3/6):
+    CubicSpline    : RMSE=2.21e-03
+    SmoothingSpline: RMSE=3.21e-02
+WARNING: Analytical derivatives for RBF_ThinPlate are not implemented. Returning NaNs.
+    RBF_ThinPlate  : RMSE=2.21e-03
+    Chebyshev      : RMSE=8.51e-01
+    Polynomial     : RMSE=2.24e+00
+    SavitzkyGolay  : RMSE=1.03e+00
+    Butterworth    : RMSE=2.45e+00
+WARNING: RandomForest is not suitable for derivative calculation. Returning NaNs.
+    RandomForest   : RMSE=2.07e-01
+    SVR            : RMSE=2.46e+00
+    Fourier        : RMSE=3.45e-01
+    FiniteDiff     : RMSE=2.21e-03
+\nNoise level 5.0e-03 (case 4/6):
+WARNING: Analytical derivatives for RBF_ThinPlate are not implemented. Returning NaNs.
+WARNING: RandomForest is not suitable for derivative calculation. Returning NaNs.
+\nNoise level 1.0e-02 (case 5/6):
+    CubicSpline    : RMSE=2.10e-02
+    SmoothingSpline: RMSE=3.02e-02
+WARNING: Analytical derivatives for RBF_ThinPlate are not implemented. Returning NaNs.
+    RBF_ThinPlate  : RMSE=2.10e-02
+    Chebyshev      : RMSE=8.51e-01
+    Polynomial     : RMSE=2.24e+00
+    SavitzkyGolay  : RMSE=1.03e+00
+    Butterworth    : RMSE=2.45e+00
+WARNING: RandomForest is not suitable for derivative calculation. Returning NaNs.
+    RandomForest   : RMSE=2.07e-01
+    SVR            : RMSE=2.45e+00
+    Fourier        : RMSE=3.45e-01
+    FiniteDiff     : RMSE=2.10e-02
+\nNoise level 5.0e-02 (case 6/6):
+WARNING: Analytical derivatives for RBF_ThinPlate are not implemented. Returning NaNs.
+WARNING: RandomForest is not suitable for derivative calculation. Returning NaNs.
+\n🎉 PROPER NOISY BENCHMARK COMPLETE!
+📁 Results saved to: results/proper_noisy_benchmark_20250613_030450.csv
+\n📊 PROPER NOISY BENCHMARK ANALYSIS
+==================================================
+Total evaluations: 336
+Successful evaluations: 264 (78.6%)
+\n🎯 FUNCTION APPROXIMATION PERFORMANCE BY NOISE LEVEL:
+\n  Noise level 0.0e+00:
+    FiniteDiff     : RMSE = 4.42e-17
+    CubicSpline    : RMSE = 4.42e-17
+    RBF_ThinPlate  : RMSE = 2.02e-12
+    SmoothingSpline: RMSE = 3.15e-02
+    RandomForest   : RMSE = 2.07e-01
+\n  Noise level 1.0e-04:
+    RBF_ThinPlate  : RMSE = 2.16e-04
+    FiniteDiff     : RMSE = 2.16e-04
+    CubicSpline    : RMSE = 2.16e-04
+    SmoothingSpline: RMSE = 3.15e-02
+    RandomForest   : RMSE = 2.07e-01
+\n  Noise level 1.0e-03:
+    FiniteDiff     : RMSE = 2.21e-03
+    CubicSpline    : RMSE = 2.21e-03
+    RBF_ThinPlate  : RMSE = 2.21e-03
+    SmoothingSpline: RMSE = 3.21e-02
+    RandomForest   : RMSE = 2.07e-01
+\n  Noise level 5.0e-03:
+    FiniteDiff     : RMSE = 1.28e-02
+    CubicSpline    : RMSE = 1.28e-02
+    RBF_ThinPlate  : RMSE = 1.28e-02
+    SmoothingSpline: RMSE = 2.99e-02
+    RandomForest   : RMSE = 2.06e-01
+\n  Noise level 1.0e-02:
+    FiniteDiff     : RMSE = 2.10e-02
+    CubicSpline    : RMSE = 2.10e-02
+    RBF_ThinPlate  : RMSE = 2.10e-02
+    SmoothingSpline: RMSE = 3.02e-02
+    RandomForest   : RMSE = 2.07e-01
+\n  Noise level 5.0e-02:
+    SmoothingSpline: RMSE = 1.16e-01
+    FiniteDiff     : RMSE = 1.27e-01
+    CubicSpline    : RMSE = 1.27e-01
+    RBF_ThinPlate  : RMSE = 1.27e-01
+    RandomForest   : RMSE = 2.12e-01
+\n🛡️  NOISE ROBUSTNESS ANALYSIS:
+(Methods that maintain low RMSE across noise levels)
+\n🏆 MOST ROBUST METHODS (lowest degradation with noise):
+  Polynomial     :    1.0x degradation (clean:2.24e+00 → noisy:2.24e+00)
+  Butterworth    :    1.0x degradation (clean:2.45e+00 → noisy:2.45e+00)
+  SVR            :    1.0x degradation (clean:2.46e+00 → noisy:2.46e+00)
+  Chebyshev      :    1.0x degradation (clean:8.51e-01 → noisy:8.52e-01)
+  SavitzkyGolay  :    1.0x degradation (clean:1.03e+00 → noisy:1.03e+00)
+  Fourier        :    1.0x degradation (clean:3.45e-01 → noisy:3.51e-01)
+  RandomForest   :    1.0x degradation (clean:2.07e-01 → noisy:2.12e-01)
+  SmoothingSpline:    3.7x degradation (clean:3.15e-02 → noisy:1.16e-01)
+  RBF_ThinPlate  : 62861062888.9x degradation (clean:2.02e-12 → noisy:1.27e-01)
+  CubicSpline    : 2869671317947458.5x degradation (clean:4.42e-17 → noisy:1.27e-01)
+\n🎯 NOW WE HAVE PROPER NOISY DATA RESULTS!
+Previous benchmark was testing on clean data (explains perfect CubicSpline)
+This benchmark tests on actual noisy data vs clean truth
+Results: results/proper_noisy_benchmark_20250613_030450.csv

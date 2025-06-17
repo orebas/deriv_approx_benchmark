@@ -10,6 +10,7 @@ using LineSearches
 using ForwardDiff
 using Suppressor
 using Symbolics
+using NoiseRobustDifferentiation
 
 """
     evaluate_all_methods(datasets, pep, config)
@@ -102,6 +103,8 @@ function evaluate_single_method(method_name::String, t, y, t_eval, config::Bench
         create_loess_approximation(t, y, config)
     elseif method_name == "BSpline5"
         create_bspline_approximation(t, y, config)
+    elseif method_name == "TVDiff"
+        create_tvdiff_approximation(t, y, config)
     else
         error("Unknown method: $method_name")
     end
@@ -265,12 +268,142 @@ function create_bspline_approximation(t, y, config::BenchmarkConfig)
 end
 
 """
+    create_tvdiff_approximation(t, y, config)
+
+Create a Total Variation Regularized Differentiation approximation.
+"""
+function create_tvdiff_approximation(t, y, config::BenchmarkConfig)
+    # Calculate dx (grid spacing)
+    dx = mean(diff(t))
+    
+    # TVDiff parameters (more conservative for robustness)
+    iter = 25    # Fewer iterations to avoid numerical instability
+    α = 0.05     # More regularization for stability
+    
+    # Estimate noise level for adaptive regularization
+    noise_estimate = std(diff(diff(y)))  # Second difference as noise proxy
+    adaptive_α = max(α, noise_estimate * 0.1)  # Adapt to noise level
+    
+    # Get the regularized function values and first derivative
+    dy = tvdiff(y, iter, adaptive_α, dx=dx, scale="small", ε=1e-6)
+    
+    # For higher order derivatives, we need to apply tvdiff iteratively
+    derivatives = Dict{Int, Vector{Float64}}()
+    derivatives[0] = y
+    derivatives[1] = dy
+    
+    current_deriv = dy
+    max_order = min(config.derivative_orders, 3)  # Limit to 3rd order for stability
+    
+    for d in 2:max_order
+        # Apply TVDiff to get the next derivative
+        # Use progressively more regularization for higher derivatives
+        deriv_α = adaptive_α * (2.0^(d-1))  # Increase regularization exponentially
+        
+        try
+            current_deriv = tvdiff(current_deriv, iter, deriv_α, dx=dx, scale="small", ε=1e-6)
+            
+            # Check for numerical issues
+            if any(isnan.(current_deriv)) || any(isinf.(current_deriv))
+                @warn "TVDiff derivative order $d has invalid values, stopping"
+                break
+            end
+            
+            # Check for excessive values (likely numerical instability)
+            max_val = maximum(abs.(current_deriv))
+            if max_val > 1e6
+                @warn "TVDiff derivative order $d has very large values ($max_val), stopping"
+                break
+            end
+            
+            derivatives[d] = current_deriv
+            
+        catch e
+            @warn "TVDiff failed at derivative order $d: $e"
+            break
+        end
+    end
+    
+    # Create interpolating splines for the function and its derivatives
+    # This allows us to evaluate at arbitrary points
+    splines = Dict{Int, Dierckx.Spline1D}()
+    
+    for (order, vals) in derivatives
+        try
+            # Ensure we have enough points for the spline degree
+            k = min(3, length(t)-1, length(vals)-1)
+            if k >= 1  # Need at least linear interpolation
+                splines[order] = Spline1D(t, vals, k=k)
+            else
+                @warn "TVDiff: Not enough points for spline interpolation at order $order"
+            end
+        catch e
+            @warn "TVDiff: Failed to create spline for order $order: $e"
+        end
+    end
+    
+    # Ensure we have at least the function (order 0)
+    if !haskey(splines, 0)
+        @error "TVDiff: Failed to create even the function approximation"
+        # Fallback to simple linear interpolation
+        try
+            splines[0] = Spline1D(t, y, k=1)
+        catch e
+            error("TVDiff: Complete failure - cannot create any approximation: $e")
+        end
+    end
+    
+    # Create callable function with robust evaluation
+    function tvdiff_func(x)
+        try
+            return evaluate(splines[0], x)
+        catch e
+            @warn "TVDiff evaluation failed at $x: $e"
+            return NaN
+        end
+    end
+    
+    # Override nth_deriv_at for derivatives with robust handling
+    function tvdiff_nth_deriv_at(n::Int, x::Real)
+        try
+            if n <= max_order && haskey(splines, n)
+                return evaluate(splines[n], x)
+            else
+                # For orders beyond what we computed, return NaN rather than crash
+                if n <= config.derivative_orders
+                    @debug "TVDiff: Derivative order $n not available (max computed: $max_order)"
+                end
+                return NaN
+            end
+        catch e
+            @warn "TVDiff derivative evaluation failed at order $n, x=$x: $e"
+            return NaN
+        end
+    end
+    
+    # Store the derivative function as a property
+    tvdiff_func.deriv = tvdiff_nth_deriv_at
+    
+    return tvdiff_func
+end
+
+"""
     calculate_errors(predictions, true_values)
 
 Calculate error metrics for predictions vs true values.
 """
 function calculate_errors(predictions::Dict, true_values::Dict)
     errors = Dict{String, NamedTuple}()
+    
+    # Get the range of the function values for normalization
+    y_range = 1.0
+    if haskey(true_values, "y")
+        y_vals = true_values["y"]
+        y_range = maximum(y_vals) - minimum(y_vals)
+        if y_range == 0
+            y_range = 1.0  # Avoid division by zero
+        end
+    end
     
     for (key, true_vals) in true_values
         if haskey(predictions, key)
@@ -280,7 +413,15 @@ function calculate_errors(predictions::Dict, true_values::Dict)
             mae = mean(abs.(pred_vals .- true_vals))
             max_error = maximum(abs.(pred_vals .- true_vals))
             
-            errors[key] = (rmse=rmse, mae=mae, max_error=max_error)
+            # Calculate normalized errors
+            rmse_normalized = rmse / y_range
+            mae_normalized = mae / y_range
+            max_error_normalized = max_error / y_range
+            
+            errors[key] = (rmse=rmse, mae=mae, max_error=max_error,
+                          rmse_normalized=rmse_normalized, 
+                          mae_normalized=mae_normalized,
+                          max_error_normalized=max_error_normalized)
         end
     end
     

@@ -55,7 +55,7 @@ def generate_noisy_test_cases():
     print(f"Clean reference data: {len(t_clean)} points, t=[{t_clean.min():.2f}, {t_clean.max():.2f}]")
     
     # Generate test cases with controlled noise levels
-    noise_levels = [0.0, 1e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+    noise_levels = [0.0, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
     test_cases = []
     
     np.random.seed(42)  # Reproducible noise
@@ -112,6 +112,11 @@ def run_proper_noisy_benchmark():
         # Create reference spline from CLEAN data for derivative truth
         ref_spline = CubicSpline(t, y_clean)
         
+        # Compute normalization factor (range of clean data)
+        y_range = y_clean.max() - y_clean.min()
+        if y_range == 0:
+            y_range = 1.0  # Avoid division by zero
+        
         # Test each method on NOISY data
         methods = create_all_methods(t, y_noisy)  # Fit to noisy data!
         
@@ -150,6 +155,11 @@ def run_proper_noisy_benchmark():
                         mae = np.mean(np.abs(errors))
                         max_error = np.max(np.abs(errors))
                         
+                        # Calculate normalized errors (by range of observable)
+                        rmse_normalized = rmse / y_range
+                        mae_normalized = mae / y_range
+                        max_error_normalized = max_error / y_range
+                        
                         # Store result
                         all_results.append({
                             'method': method_name,
@@ -159,6 +169,9 @@ def run_proper_noisy_benchmark():
                             'rmse': rmse,
                             'mae': mae,
                             'max_error': max_error,
+                            'rmse_normalized': rmse_normalized,
+                            'mae_normalized': mae_normalized,
+                            'max_error_normalized': max_error_normalized,
                             'eval_time': eval_time,
                             'fit_time': method.fit_time,
                             'success': True,
@@ -185,6 +198,9 @@ def run_proper_noisy_benchmark():
                             'rmse': np.nan,
                             'mae': np.nan,
                             'max_error': np.nan,
+                            'rmse_normalized': np.nan,
+                            'mae_normalized': np.nan,
+                            'max_error_normalized': np.nan,
                             'eval_time': eval_time,
                             'fit_time': method.fit_time,
                             'success': False,
@@ -203,6 +219,9 @@ def run_proper_noisy_benchmark():
                         'rmse': np.nan,
                         'mae': np.nan,
                         'max_error': np.nan,
+                        'rmse_normalized': np.nan,
+                        'mae_normalized': np.nan,
+                        'max_error_normalized': np.nan,
                         'eval_time': np.nan,
                         'fit_time': np.nan,
                         'success': False,

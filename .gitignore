@@ -1,8 +1,21 @@
-# Results directories
-results/
-paper_results/
-sensitivity_results/
-system_comparison/
+# Generated data, results, and reports
+/results/
+/test_data/
+/unified_analysis/
+/*_report*/
+/*_report_*/
+*_results.csv
+*.png
+
+# Environment and cache files
+.DS_Store
+report-env/
+.Julia/
+__pycache__/
+*.pyc
+
+# IDE settings
+.vscode/
 
 # Julia files
 Manifest.toml
@@ -11,11 +24,9 @@ Manifest.toml
 *.jl.mem
 
 # System files
-.DS_Store
 Thumbs.db
 
 # Editor files
-.vscode/
 .idea/
 *.swp
 *.swo

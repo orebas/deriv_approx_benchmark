@@ -570,6 +570,10 @@ class AAALeastSquaresApproximator(DerivativeApproximator):
         n_data_points = len(self.t)
         max_possible_m = min(25, n_data_points // 3) 
         
+        # Make regularization adaptive to data scale
+        y_scale = jnp.std(self.y)
+        lambda_reg = 1e-4 * y_scale if y_scale > 1e-9 else 1e-4
+
         for m_target in range(3, max_possible_m):
             try:
                 aaa_obj = AAA(self.t, self.y, max_terms=m_target)
@@ -583,7 +587,7 @@ class AAALeastSquaresApproximator(DerivativeApproximator):
             except Exception:
                 continue
 
-            def objective_func(params, lambda_reg=1e-5):
+            def objective_func(params):
                 fj, wj = jnp.split(params, 2)
                 vmap_bary_eval = jax.vmap(lambda x: barycentric_eval(x, zj, fj, wj))
                 y_pred = vmap_bary_eval(self.t)
@@ -678,6 +682,10 @@ class AAA_FullOpt_Approximator(DerivativeApproximator):
         n_data_points = len(self.t)
         max_possible_m = min(20, n_data_points // 4)
 
+        # Make regularization adaptive to data scale
+        y_scale = jnp.std(self.y)
+        lambda_reg = 1e-4 * y_scale if y_scale > 1e-9 else 1e-4
+
         for m_target in range(3, max_possible_m):
             try:
                 aaa_obj = AAA(self.t, self.y, max_terms=m_target)
@@ -691,7 +699,7 @@ class AAA_FullOpt_Approximator(DerivativeApproximator):
             except Exception as e:
                 continue
 
-            def objective_func(params, lambda_reg=1e-5):
+            def objective_func(params):
                 zj, fj, wj = jnp.split(params, 3)
                 
                 vmap_bary_eval = jax.vmap(lambda x: barycentric_eval(x, zj, fj, wj))
@@ -724,9 +732,15 @@ class AAA_FullOpt_Approximator(DerivativeApproximator):
                 if not result.success: continue
                 
                 final_params = result.x
-                rss = result.fun
+                
+                # Re-evaluate the error term (RSS) without the penalty terms
+                # for a correct BIC calculation.
+                zj_final, fj_final, wj_final = jnp.split(final_params, 3)
+                y_pred_final = jax.vmap(lambda x: barycentric_eval(x, zj_final, fj_final, wj_final))(self.t)
+                pure_rss = jnp.sum((self.y - y_pred_final)**2)
+
                 k = 3 * m_actual
-                bic = k * np.log(n_data_points) + n_data_points * np.log(rss / n_data_points + 1e-12)
+                bic = k * np.log(n_data_points) + n_data_points * np.log(pure_rss / n_data_points + 1e-12)
 
                 if bic < best_model['bic']:
                     best_model.update({'bic': bic, 'params': final_params, 'm': m_actual})
@@ -756,6 +770,106 @@ class AAA_FullOpt_Approximator(DerivativeApproximator):
             return np.full_like(t_eval, np.nan)
         # Vmap the n-th order derivative function for evaluation
         return np.array(jax.vmap(self.ad_derivatives[order])(t_eval))
+
+# =============================================================================
+#  KalmanGrad Approximator
+# =============================================================================
+
+class KalmanGradApproximator(DerivativeApproximator):
+    """
+    Approximates derivatives using Bayesian filtering/smoothing via KalmanGrad.
+    Uses Kalman filtering to estimate function and derivatives from noisy data.
+    """
+    def __init__(self, t, y, name="KalmanGrad"):
+        super().__init__(t, y, name)
+        self.max_derivative_supported = 5
+        self.smoother_states = None
+        self.filter_times = None
+        self.success = True
+        self.obs_noise_std = 0.01
+        self.final_cov = 0.0001
+        
+    def _fit_implementation(self):
+        try:
+            from kalmangrad import grad
+            from scipy.interpolate import interp1d
+            
+            # Estimate noise level from data if not specified
+            if len(self.y) > 10:
+                # Use median absolute deviation to estimate noise
+                diff_y = np.diff(self.y)
+                self.obs_noise_std = max(1.48 * np.median(np.abs(diff_y - np.median(diff_y))), 1e-6)
+            
+            # Adjust final_cov based on data scale
+            data_scale = np.std(self.y)
+            self.final_cov = min(0.01 * data_scale**2, 1.0)
+            
+            # Run KalmanGrad with automatic parameter estimation
+            self.smoother_states, self.filter_times = grad(
+                self.y, self.t, 
+                n=self.max_derivative_supported,
+                obs_noise_std=self.obs_noise_std,
+                online=False,  # Use offline smoothing for better accuracy
+                final_cov=self.final_cov
+            )
+            
+            self.success = True
+            
+        except Exception as e:
+            print(f"KalmanGrad fitting failed: {e}")
+            self.success = False
+    
+    def _evaluate_function(self, t_eval):
+        if not self.success or self.smoother_states is None:
+            return np.full_like(t_eval, np.nan)
+        
+        try:
+            from scipy.interpolate import interp1d
+            
+            # Extract function values from smoother states
+            # Note: mean is a method, not an attribute
+            y_kg = np.array([state.mean()[0] for state in self.smoother_states])
+            
+            # Convert times to array if it's a list
+            times_array = np.array(self.filter_times) if isinstance(self.filter_times, list) else self.filter_times
+            
+            # Interpolate to evaluation points
+            interp_func = interp1d(times_array, y_kg, 
+                                 kind='cubic', bounds_error=False, 
+                                 fill_value='extrapolate')
+            return interp_func(t_eval)
+            
+        except Exception:
+            return np.full_like(t_eval, np.nan)
+    
+    def _evaluate_derivative(self, t_eval, order):
+        if not self.success or self.smoother_states is None:
+            return np.full_like(t_eval, np.nan)
+        
+        if order == 0:
+            return self._evaluate_function(t_eval)
+        
+        if order > self.max_derivative_supported:
+            return np.full_like(t_eval, np.nan)
+        
+        try:
+            from scipy.interpolate import interp1d
+            
+            # Extract derivative values from smoother states
+            # Note: mean is a method, not an attribute
+            dy_kg = np.array([state.mean()[order] for state in self.smoother_states])
+            
+            # Convert times to array if it's a list
+            times_array = np.array(self.filter_times) if isinstance(self.filter_times, list) else self.filter_times
+            
+            # Interpolate to evaluation points
+            interp_func = interp1d(times_array, dy_kg, 
+                                 kind='cubic', bounds_error=False, 
+                                 fill_value='extrapolate')
+            return interp_func(t_eval)
+            
+        except Exception:
+            return np.full_like(t_eval, np.nan)
 
 # =============================================================================
 # METHOD FACTORY
@@ -794,11 +908,19 @@ def create_all_methods(t, y):
     # Finite difference methods
     methods['FiniteDiff'] = FiniteDifferenceApproximator(t, y, "FiniteDiff")
     
-    # New Approximator: AAA with Least-Squares Refinement
+    # Advanced approximators
     methods['AAA_LS'] = AAALeastSquaresApproximator(t, y)
     methods['AAA_FullOpt'] = AAA_FullOpt_Approximator(t, y)
+    methods['KalmanGrad'] = KalmanGradApproximator(t, y, "KalmanGrad")
     
     return methods
+
+def get_base_method_names():
+    """Return the names of the base methods available."""
+    # Create dummy arrays for instantiation
+    t = np.array([0.0, 1.0])
+    y = np.array([0.0, 1.0])
+    return list(create_all_methods(t, y).keys())
 
 def get_method_categories():
     """Return categorization of methods"""
@@ -809,7 +931,8 @@ def get_method_categories():
         'Smoothing': ['SavitzkyGolay', 'Butterworth'],
         'Machine_Learning': ['RandomForest', 'SVR'],
         'Spectral': ['Fourier'],
-        'Finite_Difference': ['FiniteDiff']
+        'Finite_Difference': ['FiniteDiff'],
+        'Advanced': ['AAA_LS', 'AAA_FullOpt', 'KalmanGrad']
     }
 
 if __name__ == "__main__":

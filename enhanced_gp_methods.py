@@ -138,6 +138,13 @@ def create_enhanced_gp_methods(t, y):
     
     return methods
 
+def get_enhanced_gp_method_names():
+    """Return the names of the enhanced GP methods available."""
+    # Create dummy arrays for instantiation
+    t = np.array([0.0, 1.0])
+    y = np.array([0.0, 1.0])
+    return list(create_enhanced_gp_methods(t, y).keys())
+
 if __name__ == "__main__":
     # Test the enhanced GP methods
     t = np.linspace(0, 2*np.pi, 50)

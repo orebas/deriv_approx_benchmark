@@ -42,7 +42,7 @@ Base.@kwdef struct BenchmarkConfig
     random_seed::Int = 42
     
     # Methods to benchmark
-    methods::Vector{String} = ["GPR", "AAA", "AAA_lowpres", "LOESS", "BSpline5"]
+    methods::Vector{String} = ["GPR", "AAA", "AAA_lowpres", "LOESS", "BSpline5", "TVDiff"]
     derivative_orders::Int = 5
     
     # Output configuration

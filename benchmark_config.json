@@ -1,0 +1,83 @@
+{
+  "description": "Centralized configuration for derivative approximation benchmark",
+  "version": "1.0",
+  "ode_problems": [
+    "lv_periodic",
+    "vanderpol",
+    "brusselator",
+    "fitzhugh_nagumo",
+    "seir"
+  ],
+  "noise_levels": [
+    0.0,
+    1e-08,
+    1e-07,
+    1e-06,
+    1e-05,
+    0.0001,
+    0.001,
+    0.01,
+    0.1
+  ],
+  "data_config": {
+    "data_size": 201,
+    "derivative_orders": 4,
+    "random_seed": 42
+  },
+  "julia_methods": [
+    "GPR",
+    "AAA",
+    "AAA_lowpres",
+    "LOESS",
+    "BSpline5",
+    "TVDiff"
+  ],
+  "python_methods": {
+    "base_methods": [
+      "CubicSpline",
+      "SmoothingSpline",
+      "RBF_ThinPlate",
+      "RBF_Multiquadric",
+      "GP_RBF",
+      "GP_Matern",
+      "Chebyshev",
+      "Polynomial",
+      "SavitzkyGolay",
+      "Butterworth",
+      "RandomForest",
+      "SVR",
+      "Fourier",
+      "FiniteDiff",
+      "AAA_LS",
+      "AAA_FullOpt",
+      "KalmanGrad"
+    ],
+    "enhanced_gp_methods": [
+      "GP_RBF_Iso",
+      "GP_Matern_1.5",
+      "GP_Matern_2.5",
+      "GP_Periodic"
+    ]
+  },
+  "method_parameters": {
+    "gpr_jitter": 1e-08,
+    "gpr_noise_threshold": 1e-05,
+    "aaa_tol_low": 0.1,
+    "aaa_tol_high": 1e-14,
+    "aaa_max_degree": 48,
+    "loess_span": 0.2,
+    "spline_order": 5
+  },
+  "output_config": {
+    "results_dir": "results",
+    "unified_analysis_dir": "unified_analysis",
+    "test_data_dir": "test_data"
+  },
+  "runtime_options": {
+    "verbose": true,
+    "clean_before_run": true,
+    "run_julia": true,
+    "run_python": true,
+    "create_unified_analysis": true
+  }
+}

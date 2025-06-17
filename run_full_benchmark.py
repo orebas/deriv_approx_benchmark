@@ -17,6 +17,7 @@ from pathlib import Path
 # Import all method creation functions
 from comprehensive_methods_library import create_all_methods as create_base_methods
 from enhanced_gp_methods import create_enhanced_gp_methods
+import json
 
 def discover_and_load_test_cases():
     """
@@ -94,8 +95,35 @@ def run_full_benchmark():
             
             # Re-initialize methods with the current noisy data
             current_methods = {}
-            current_methods.update(create_base_methods(t, y_noisy))
-            current_methods.update(create_enhanced_gp_methods(t, y_noisy))
+            
+            # Try to load configuration, fallback to all methods if not found
+            try:
+                with open('benchmark_config.json', 'r') as f:
+                    config = json.load(f)
+                
+                # Get method lists from the unified config
+                enabled_base_methods = config['python_methods'].get('base_methods', [])
+                enabled_gp_methods = config['python_methods'].get('enhanced_gp_methods', [])
+
+                # Create only base methods that are in config
+                all_base_methods = create_base_methods(t, y_noisy)
+                for method_name in enabled_base_methods:
+                    if method_name in all_base_methods:
+                        current_methods[method_name] = all_base_methods[method_name]
+                
+                # Create only enhanced GP methods that are in config
+                all_gp_methods = create_enhanced_gp_methods(t, y_noisy)
+                for method_name in enabled_gp_methods:
+                    if method_name in all_gp_methods:
+                        current_methods[method_name] = all_gp_methods[method_name]
+                        
+                print(f" (Using {len(current_methods)} configured methods)")
+                
+            except (FileNotFoundError, json.JSONDecodeError):
+                # Fallback to all methods if config not found
+                current_methods.update(create_base_methods(t, y_noisy))
+                current_methods.update(create_enhanced_gp_methods(t, y_noisy))
+                print(f" (Using all {len(current_methods)} methods - no config found)")
 
             for method_name, method in current_methods.items():
                 print(f"    Testing {method_name:25s}...", end="", flush=True)
@@ -120,6 +148,16 @@ def run_full_benchmark():
                             y_true = truth_df[true_col_name].values
                             errors = y_pred - y_true
                             rmse = np.sqrt(np.mean(errors**2))
+                            mae = np.mean(np.abs(errors))
+                            max_error = np.max(np.abs(errors))
+                            
+                            # Normalization by range of true values
+                            y_range = y_true.max() - y_true.min()
+                            if y_range == 0:
+                                y_range = 1.0
+                            rmse_normalized = rmse / y_range
+                            mae_normalized = mae / y_range
+                            max_error_normalized = max_error / y_range
                             
                             all_results.append({
                                 'test_case': ode_name,
@@ -128,6 +166,11 @@ def run_full_benchmark():
                                 'noise_level': noise_level,
                                 'derivative_order': deriv_order,
                                 'rmse': rmse,
+                                'mae': mae,
+                                'max_error': max_error,
+                                'rmse_normalized': rmse_normalized,
+                                'mae_normalized': mae_normalized,
+                                'max_error_normalized': max_error_normalized,
                                 'eval_time': eval_time,
                                 'fit_time': getattr(method, 'fit_time', 0),
                                 'success': True
@@ -139,8 +182,9 @@ def run_full_benchmark():
                              all_results.append({
                                 'test_case': ode_name, 'observable': obs, 'method': method_name,
                                 'noise_level': noise_level, 'derivative_order': deriv_order,
-                                'rmse': np.nan, 'eval_time': eval_time, 
-                                'fit_time': getattr(method, 'fit_time', 0), 'success': False
+                                'rmse': np.nan, 'mae': np.nan, 'max_error': np.nan,
+                                'rmse_normalized': np.nan, 'mae_normalized': np.nan, 'max_error_normalized': np.nan,
+                                'eval_time': eval_time, 'fit_time': getattr(method, 'fit_time', 0), 'success': False
                             })
                 
                 except Exception as e:
@@ -150,7 +194,9 @@ def run_full_benchmark():
                         all_results.append({
                             'test_case': ode_name, 'observable': obs, 'method': method_name,
                             'noise_level': noise_level, 'derivative_order': deriv_order,
-                            'rmse': np.nan, 'eval_time': np.nan, 'fit_time': np.nan, 'success': False
+                            'rmse': np.nan, 'mae': np.nan, 'max_error': np.nan,
+                            'rmse_normalized': np.nan, 'mae_normalized': np.nan, 'max_error_normalized': np.nan,
+                            'eval_time': np.nan, 'fit_time': np.nan, 'success': False
                         })
 
     # --- Save Raw Results ---

@@ -24,7 +24,7 @@ def generate_test_data():
     y_clean = 2 + 3*np.sin(t) + 1.5*np.cos(2*t) + 0.5*np.sin(3*t)
     
     # Multiple noise levels
-    noise_levels = [0.0, 1e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
+    noise_levels = [0.0, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1]
     
     test_cases = []
     np.random.seed(42)  # Reproducible
@@ -78,6 +78,11 @@ def run_gp_comparison():
         # Create reference for derivatives
         ref_spline = CubicSpline(t, y_clean)
         
+        # Compute normalization factor (range of clean data)
+        y_range = y_clean.max() - y_clean.min()
+        if y_range == 0:
+            y_range = 1.0  # Avoid division by zero
+        
         # Test each GP variant
         gp_methods = create_enhanced_gp_methods(t, y_noisy)
         
@@ -109,6 +114,11 @@ def run_gp_comparison():
                         mae = np.mean(np.abs(errors))
                         max_error = np.max(np.abs(errors))
                         
+                        # Calculate normalized errors (by range of observable)
+                        rmse_normalized = rmse / y_range
+                        mae_normalized = mae / y_range
+                        max_error_normalized = max_error / y_range
+                        
                         # Store result
                         all_results.append({
                             'method': method_name,
@@ -118,6 +128,9 @@ def run_gp_comparison():
                             'rmse': rmse,
                             'mae': mae,
                             'max_error': max_error,
+                            'rmse_normalized': rmse_normalized,
+                            'mae_normalized': mae_normalized,
+                            'max_error_normalized': max_error_normalized,
                             'eval_time': eval_time,
                             'fit_time': method.fit_time,
                             'success': True
@@ -134,6 +147,9 @@ def run_gp_comparison():
                             'rmse': np.nan,
                             'mae': np.nan,
                             'max_error': np.nan,
+                            'rmse_normalized': np.nan,
+                            'mae_normalized': np.nan,
+                            'max_error_normalized': np.nan,
                             'eval_time': eval_time,
                             'fit_time': method.fit_time,
                             'success': False
@@ -151,6 +167,9 @@ def run_gp_comparison():
                         'rmse': np.nan,
                         'mae': np.nan,
                         'max_error': np.nan,
+                        'rmse_normalized': np.nan,
+                        'mae_normalized': np.nan,
+                        'max_error_normalized': np.nan,
                         'eval_time': np.nan,
                         'fit_time': np.nan,
                         'success': False,

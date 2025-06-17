@@ -34,9 +34,21 @@ using ForwardDiff
 using Suppressor
 using Symbolics
 using CSV
+using ArgParse
+using JSON
 
 # Load the examples
-# include("../src/examples/load_examples.jl")
+# To make this script more portable, we assume the example model files
+# are located relative to the project's `src` directory.
+try
+	include("src/examples/models/classical_systems.jl")
+	include("src/examples/models/biological_systems.jl")
+	include("src/examples/models/advanced_systems.jl")
+catch e
+	@warn "Could not include model files from default 'src/examples/models/' path."
+	@warn "Please ensure these files exist or adjust the include paths if necessary."
+	@warn "Original error: " e
+end
 
 # Configuration struct
 struct BenchmarkConfig
@@ -65,9 +77,9 @@ function BenchmarkConfig(;
 	example_name = "lv_periodic",
 	noise_level = 1e-3,
 	noise_type = "additive",
-	data_size = 51,
-	methods = ["GPR", "AAA", "AAA_lowpres", "LOESS", "BSpline5"],
-	derivative_orders = 5,
+	data_size = 201,
+	methods = ["GPR", "BSpline5", "TVDiff", "LOESS", "AAA_lowpres", "AAA"],
+	derivative_orders = 4,
 	output_dir = "./results",
 	experiment_name = "benchmark_" * Dates.format(now(), "yyyymmdd_HHMMSS"),
 	random_seed = 42,
@@ -480,31 +492,53 @@ function results_to_summary_df(results, config::BenchmarkConfig)
 end
 
 """
+Load configuration from a JSON file and merge with defaults.
+"""
+function load_config_from_file(file_path::String)
+	println("... Loading configuration from $file_path")
+	config_dict = JSON.parsefile(file_path)
+
+	# Extract parameters and merge them into the BenchmarkConfig constructor
+	# This allows the JSON to override any of the defaults.
+	return BenchmarkConfig(
+		data_size = get(config_dict["data_config"], "data_size", 201),
+		derivative_orders = get(config_dict["data_config"], "derivative_orders", 4),
+		methods = get(config_dict, "julia_methods", ["GPR", "BSpline5"]),
+		# Other parameters can be added here if they are in the JSON
+	)
+end
+
+"""
 Main benchmark function.
 """
-function run_full_sweep()
+function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 	mkpath("./results") # Ensure output directory
 	mkpath("./test_data") # Ensure data export directory
 
 	println("="^60)
-	println("RUNNING FULL JULIA BENCHMARK SWEEP (MULTI-ODE)")
+	println("RUNNING FULL JULIA BENCHMARK SWEEP (CONFIG-DRIVEN)")
 	println("="^60)
 
-	# 1. DEFINE ODE TEST CASES
+	# 1. LOAD CONFIGURATION
 	# --------------------------
-	ode_problems_to_test = [
-		"lv_periodic",
-		"vanderpol",
-		"brusselator",
-		"fitzhugh_nagumo",
-		"seir",
-	]
+	if isnothing(config_path)
+		println("... No config file provided, using default settings.")
+		default_config = BenchmarkConfig()
+		ode_problems_to_test = ["lv_periodic"]
+		noise_levels = [0.0, 0.01]
+	else
+		# This part is not fully implemented for all params, but sets the stage
+		base_config = load_config_from_file(config_path)
+		full_config_dict = JSON.parsefile(config_path)
+		ode_problems_to_test = get(full_config_dict, "ode_problems", ["lv_periodic"])
+		noise_levels = get(full_config_dict, "noise_levels", [0.0, 0.01])
+		println("... Loaded $(length(ode_problems_to_test)) ODEs and $(length(noise_levels)) noise levels from config.")
+	end
+
 	println("Testing against $(length(ode_problems_to_test)) ODE models: $(join(ode_problems_to_test, ", "))")
 
 	# 2. SETUP BENCHMARK PARAMETERS
 	# -------------------------------
-	noise_levels = [0.0, 1e-3, 1e-2, 5e-2] # A representative set of noise levels
-	data_size = 101 # Standardized data size
 	all_results_df = DataFrame()
 
 	# 3. MAIN LOOP OVER ODES AND NOISE
@@ -519,13 +553,21 @@ function run_full_sweep()
 		pep = model_func()
 
 		for noise_level in noise_levels
-			config = BenchmarkConfig(
-				example_name = ode_name,
-				noise_level = noise_level,
-				data_size = data_size,
-				verbose = true,
-				derivative_orders = 3,
-			)
+			# Use the base_config and override noise_level for this specific run
+			config = if isnothing(config_path)
+				BenchmarkConfig(example_name = ode_name, noise_level = noise_level)
+			else
+				# Re-create config for each run to correctly set noise/name
+				full_config_dict = JSON.parsefile(config_path)
+				BenchmarkConfig(
+					example_name = ode_name,
+					noise_level = noise_level,
+					data_size = get(full_config_dict["data_config"], "data_size", 201),
+					derivative_orders = get(full_config_dict["data_config"], "derivative_orders", 4),
+					methods = get(full_config_dict, "julia_methods", ["GPR", "BSpline5"]),
+				)
+			end
+
 
 			# Generate datasets for this ODE and noise level
 			datasets = generate_datasets(pep, config)
@@ -555,12 +597,22 @@ function run_full_sweep()
 	println("📁 Raw Julia results for all ODEs saved to: $(output_file)")
 end
 
-# We need to include the model files to make the functions available
-include("/home/orebas/.julia/dev/ODEParameterEstimation/src/examples/models/classical_systems.jl")
-include("/home/orebas/.julia/dev/ODEParameterEstimation/src/examples/models/biological_systems.jl")
-include("/home/orebas/.julia/dev/ODEParameterEstimation/src/examples/models/advanced_systems.jl")
+"""
+Parse command-line arguments.
+"""
+function parse_commandline()
+	s = ArgParseSettings()
+	@add_arg_table! s begin
+		"--config"
+		help = "Path to the JSON configuration file."
+		arg_type = String
+	end
+	return parse_args(s)
+end
 
 # This is the main entry point of the script
 if abspath(PROGRAM_FILE) == @__FILE__
-	run_full_sweep()
+	parsed_args = parse_commandline()
+	config_path = parsed_args["config"]
+	run_full_sweep(config_path)
 end

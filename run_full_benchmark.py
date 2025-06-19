@@ -101,15 +101,21 @@ def run_full_benchmark():
                 with open('benchmark_config.json', 'r') as f:
                     config = json.load(f)
                 
-                # Get method lists from the unified config
+                # Get method lists and derivative orders from the unified config
                 enabled_base_methods = config['python_methods'].get('base_methods', [])
                 enabled_gp_methods = config['python_methods'].get('enhanced_gp_methods', [])
+                max_deriv_from_config = config['data_config'].get('derivative_orders', 4)
 
                 # Create only base methods that are in config
                 all_base_methods = create_base_methods(t, y_noisy)
+                print("\nDEBUG: Available base methods:", sorted(list(all_base_methods.keys())))
+                print("DEBUG: Configured base methods:", enabled_base_methods)
+                
                 for method_name in enabled_base_methods:
                     if method_name in all_base_methods:
                         current_methods[method_name] = all_base_methods[method_name]
+                    else:
+                        print(f"DEBUG: Configured method '{method_name}' not found in available methods!")
                 
                 # Create only enhanced GP methods that are in config
                 all_gp_methods = create_enhanced_gp_methods(t, y_noisy)
@@ -123,6 +129,7 @@ def run_full_benchmark():
                 # Fallback to all methods if config not found
                 current_methods.update(create_base_methods(t, y_noisy))
                 current_methods.update(create_enhanced_gp_methods(t, y_noisy))
+                max_deriv_from_config = 4  # Default fallback
                 print(f" (Using all {len(current_methods)} methods - no config found)")
 
             for method_name, method in current_methods.items():
@@ -130,7 +137,9 @@ def run_full_benchmark():
                 
                 try:
                     start_time = time.time()
-                    max_deriv = getattr(method, 'max_derivative_supported', 3)
+                    # Use the minimum of config setting and method capability
+                    method_max_deriv = getattr(method, 'max_derivative_supported', 7)
+                    max_deriv = min(max_deriv_from_config, method_max_deriv)
                     results = method.evaluate(t, max_derivative=max_deriv)
                     eval_time = time.time() - start_time
                     
@@ -189,7 +198,8 @@ def run_full_benchmark():
                 
                 except Exception as e:
                     print(f" ❌ Error: {str(e)[:50]}")
-                    max_deriv = getattr(method, 'max_derivative_supported', 3)
+                    method_max_deriv = getattr(method, 'max_derivative_supported', 7)
+                    max_deriv = min(max_deriv_from_config, method_max_deriv)
                     for deriv_order in range(max_deriv + 1):
                         all_results.append({
                             'test_case': ode_name, 'observable': obs, 'method': method_name,

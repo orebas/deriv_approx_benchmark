@@ -4,22 +4,31 @@
     benchmark_timing(method_func, n_runs=10)
 
 Benchmark the execution time of a method.
+
+Note: This is a simple timer with warm-up run to account for JIT compilation.
+For high-fidelity benchmarking results, consider using BenchmarkTools.jl.
 """
 function benchmark_timing(method_func, n_runs=10)
-    times = Float64[]
+    # Warm-up run to trigger JIT compilation
+    method_func()
     
-    for _ in 1:n_runs
-        start = time()
+    times = Vector{UInt64}(undef, n_runs)
+    
+    for i in 1:n_runs
+        start = time_ns()
         method_func()
-        push!(times, time() - start)
+        times[i] = time_ns() - start
     end
     
+    # Convert from nanoseconds to seconds for the final report
+    times_sec = times ./ 1e9
+    
     return (
-        mean = mean(times),
-        std = std(times),
-        min = minimum(times),
-        max = maximum(times),
-        median = median(times)
+        mean = mean(times_sec),
+        std = std(times_sec),
+        min = minimum(times_sec),
+        max = maximum(times_sec),
+        median = median(times_sec)
     )
 end
 
@@ -57,7 +66,7 @@ function cross_validate_methods(datasets, pep, config::BenchmarkConfig; n_folds=
     n_points = length(datasets.clean["t"])
     fold_size = n_points ÷ n_folds
     
-    cv_results = Dict{String, Vector{NamedTuple}}()
+    cv_results = Dict{String, Vector{Dict{String,Float64}}}()
     
     for method in config.methods
         cv_results[method] = []

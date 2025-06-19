@@ -98,12 +98,13 @@ def quick_edit_menu(config):
         print("2. Edit noise levels")
         print("3. Toggle Julia methods")
         print("4. Toggle Python methods")
-        print("5. Quick presets")
-        print("6. Show current config")
-        print("7. Save and exit")
-        print("8. Exit without saving")
+        print("5. Edit derivative orders")
+        print("6. Quick presets")
+        print("7. Show current config")
+        print("8. Save and exit")
+        print("9. Exit without saving")
         
-        choice = input("\nEnter choice (1-8): ").strip()
+        choice = input("\nEnter choice (1-9): ").strip()
         
         if choice == '1':
             toggle_ode_problems(config)
@@ -114,14 +115,16 @@ def quick_edit_menu(config):
         elif choice == '4':
             toggle_python_methods(config)
         elif choice == '5':
-            quick_presets(config)
+            edit_derivative_orders(config)
         elif choice == '6':
-            show_current_config(config)
+            quick_presets(config)
         elif choice == '7':
+            show_current_config(config)
+        elif choice == '8':
             save_config(config)
             print("✅ Configuration saved!")
             break
-        elif choice == '8':
+        elif choice == '9':
             print("❌ Exiting without saving")
             break
         else:
@@ -186,6 +189,28 @@ def edit_noise_levels(config):
             print("Invalid input. Keeping current values.")
     
     print(f"✅ Updated noise levels: {config['noise_levels']}")
+
+def edit_derivative_orders(config):
+    """Edit the maximum derivative order to compute."""
+    print(f"\n📊 Current derivative orders: {config['data_config']['derivative_orders']}")
+    print("\nNote: Higher orders require more computation but provide more detailed analysis.")
+    print("Recommended ranges:")
+    print("  • Quick testing: 1-2")
+    print("  • Standard analysis: 3-4") 
+    print("  • Comprehensive analysis: 5-7")
+    print("  • Maximum supported: 7")
+    
+    try:
+        new_orders = input("\nEnter new derivative orders (1-7): ").strip()
+        new_orders_int = int(new_orders)
+        
+        if 1 <= new_orders_int <= 7:
+            config['data_config']['derivative_orders'] = new_orders_int
+            print(f"✅ Updated derivative orders: {new_orders_int}")
+        else:
+            print("❌ Invalid range. Must be between 1 and 7.")
+    except ValueError:
+        print("❌ Invalid input. Must be a number between 1 and 7.")
 
 def toggle_julia_methods(config):
     """Toggle Julia methods on/off."""
@@ -305,6 +330,7 @@ def quick_presets(config):
         config['python_methods']['base_methods'] = ['CubicSpline', 'GP_RBF', 'SavitzkyGolay']
         config['python_methods']['enhanced_gp_methods'] = []
         config['data_config']['data_size'] = 101
+        config['data_config']['derivative_orders'] = 2
     elif choice == '2':
         config['ode_problems'] = ['lv_periodic']
         config['noise_levels'] = [0.0, 1e-6, 1e-4, 1e-3, 1e-2, 1e-1]
@@ -318,6 +344,7 @@ def quick_presets(config):
         ]
         config['python_methods']['enhanced_gp_methods'] = ["GP_RBF_Iso", "GP_Matern_1.5", "GP_Matern_2.5", "GP_Periodic"]
         config['data_config']['data_size'] = 201
+        config['data_config']['derivative_orders'] = 4
     elif choice == '3':
         config['ode_problems'] = ["lv_periodic", "vanderpol", "brusselator", "fitzhugh_nagumo", "seir"]
         config['noise_levels'] = [0.0, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
@@ -326,6 +353,7 @@ def quick_presets(config):
         config['python_methods']['base_methods'] = ['CubicSpline', 'SmoothingSpline', 'GP_RBF', 'GP_Matern', 'SavitzkyGolay']
         config['python_methods']['enhanced_gp_methods'] = ['GP_Matern_2.5']
         config['data_config']['data_size'] = 201
+        config['data_config']['derivative_orders'] = 3
     elif choice == '4':
         config['ode_problems'] = ["lv_periodic", "vanderpol", "brusselator", "fitzhugh_nagumo", "seir"]
         config['noise_levels'] = [0.0, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
@@ -339,6 +367,7 @@ def quick_presets(config):
         ]
         config['python_methods']['enhanced_gp_methods'] = ["GP_RBF_Iso", "GP_Matern_1.5", "GP_Matern_2.5", "GP_Periodic"]
         config['data_config']['data_size'] = 201
+        config['data_config']['derivative_orders'] = 4
     
     print(f"✅ Applied preset {choice}")
 

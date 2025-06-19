@@ -1,11 +1,11 @@
 name = "DerivativeApproximationBenchmark"
 uuid = "12345678-1234-5678-1234-567812345678"
-authors = ["Your Name <your.email@example.com>"]
 version = "0.1.0"
+authors = ["Your Name <your.email@example.com>"]
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
-BaryRational = "e40e402b-a76f-4457-b47f-3ec2b6a5c3f1"
+BaryRational = "91aaffc3-5777-4842-85b7-5d3d5d6a3494"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -17,6 +17,7 @@ LineSearches = "d3d80556-e9d4-5f37-9878-2ab0fcc64255"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Loess = "4345ca2d-374a-55d4-8d30-97f9976e7612"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+NoiseRobustDifferentiation = "470638dc-0858-4731-a73a-678bdc45695b"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
@@ -27,4 +28,6 @@ Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
+BaryRational = "1.1.1"
+NoiseRobustDifferentiation = "0.2.4"
 julia = "1.6"

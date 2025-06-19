@@ -12,6 +12,15 @@ using Suppressor
 using Symbolics
 using NoiseRobustDifferentiation
 
+# Wrapper struct for approximation functions with custom derivative methods
+struct ApproximationWrapper
+    func::Function
+    deriv::Function
+end
+
+# Make the struct callable, so it behaves like a function for evaluation
+(aw::ApproximationWrapper)(x) = aw.func(x)
+
 """
     evaluate_all_methods(datasets, pep, config)
 
@@ -209,6 +218,12 @@ function create_aaa_approximation(t, y, config::BenchmarkConfig; high_precision=
             end
         end
         
+        # Check if we found a valid approximation
+        if best_approx === nothing
+            @warn "AAA failed to find valid approximation for input size $(length(t))"
+            throw(ArgumentError("Insufficient data points for AAA approximation"))
+        end
+        
         # Create callable with denormalization
         callable_approx = AAADapprox(best_approx)
         
@@ -262,9 +277,7 @@ function create_bspline_approximation(t, y, config::BenchmarkConfig)
     end
     
     # Store the derivative function as a property (hacky but works)
-    spline_func.deriv = spline_nth_deriv_at
-    
-    return spline_func
+    return ApproximationWrapper(spline_func, spline_nth_deriv_at)
 end
 
 """
@@ -381,10 +394,7 @@ function create_tvdiff_approximation(t, y, config::BenchmarkConfig)
         end
     end
     
-    # Store the derivative function as a property
-    tvdiff_func.deriv = tvdiff_nth_deriv_at
-    
-    return tvdiff_func
+    return ApproximationWrapper(tvdiff_func, tvdiff_nth_deriv_at)
 end
 
 """

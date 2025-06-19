@@ -103,7 +103,7 @@ def run_julia_benchmark(config, config_file="benchmark_config.json"):
         # Pass the config file path as a command-line argument
         cmd = ['julia', 'benchmark_derivatives.jl', '--config', config_file]
         result = subprocess.run(cmd, 
-                              capture_output=True, text=True, timeout=3600)
+                              capture_output=True, text=True, timeout=43200)
         if result.returncode == 0:
             print("✅ Julia benchmark completed successfully")
             return True
@@ -112,7 +112,7 @@ def run_julia_benchmark(config, config_file="benchmark_config.json"):
             print("STDERR:", result.stderr)
             return False
     except subprocess.TimeoutExpired:
-        print("❌ Julia benchmark timed out (1 hour)")
+        print("❌ Julia benchmark timed out (12 hours)")
         return False
     except Exception as e:
         print(f"❌ Julia benchmark error: {e}")
@@ -127,7 +127,7 @@ def run_python_benchmark(config):
     print("\n🐍 Running Python benchmark...")
     try:
         result = subprocess.run(['python3', 'run_full_benchmark.py'], 
-                              capture_output=True, text=True, timeout=7200)
+                              capture_output=True, text=True, timeout=43200)
         if result.returncode == 0:
             print("✅ Python benchmark completed successfully")
             return True
@@ -136,7 +136,7 @@ def run_python_benchmark(config):
             print("STDERR:", result.stderr)
             return False
     except subprocess.TimeoutExpired:
-        print("❌ Python benchmark timed out (2 hours)")
+        print("❌ Python benchmark timed out (12 hours)")
         return False
     except Exception as e:
         print(f"❌ Python benchmark error: {e}")

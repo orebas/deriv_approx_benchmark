@@ -50,7 +50,7 @@ catch e
 	@warn "Original error: " e
 end
 
-# Configuration struct
+# Configuration struct (must be defined before including approximation_methods.jl)
 struct BenchmarkConfig
 	example_name::String
 	noise_level::Float64
@@ -99,6 +99,9 @@ function BenchmarkConfig(;
 		aaa_max_degree, loess_span, spline_order,
 	)
 end
+
+# Include approximation methods module (after BenchmarkConfig is defined)
+include("src/approximation_methods.jl")
 
 """
 Calculate symbolic derivatives of observables up to specified order.
@@ -247,6 +250,10 @@ function save_datasets_to_csv(ode_name, noise_level, datasets)
 	end
 	CSV.write(joinpath(output_dir, "truth_data.csv"), truth_df)
 end
+
+# NOTE: Commenting out duplicate functions - these are now provided by src/approximation_methods.jl
+# This ensures TVDiff support and maintains consistency
+#=
 
 """
 Create GPR approximation with fallback to AAA.
@@ -452,10 +459,17 @@ function evaluate_all_methods(datasets, pep, config::BenchmarkConfig)
 	return results
 end
 
+=# # End of commented duplicate functions
+
 function results_to_summary_df(results, config::BenchmarkConfig)
 	rows = []
 
 	for (obs_key, obs_results) in results
+		# Skip metadata key added by new evaluate_all_methods function
+		if obs_key == "metadata"
+			continue
+		end
+		
 		for (method_name, method_results) in obs_results
 			if !haskey(method_results, "errors")
 				continue
@@ -503,6 +517,7 @@ function load_config_from_file(file_path::String)
 	return BenchmarkConfig(
 		data_size = get(config_dict["data_config"], "data_size", 201),
 		derivative_orders = get(config_dict["data_config"], "derivative_orders", 4),
+		random_seed = get(config_dict["data_config"], "random_seed", 42),
 		methods = get(config_dict, "julia_methods", ["GPR", "BSpline5"]),
 		# Other parameters can be added here if they are in the JSON
 	)
@@ -521,18 +536,25 @@ function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 
 	# 1. LOAD CONFIGURATION
 	# --------------------------
+	# Parse config file once and reuse throughout
+	full_config_dict = Dict{String,Any}()
+	
 	if isnothing(config_path)
 		println("... No config file provided, using default settings.")
 		default_config = BenchmarkConfig()
 		ode_problems_to_test = ["lv_periodic"]
 		noise_levels = [0.0, 0.01]
+		Random.seed!(default_config.random_seed)
+		println("... Set random seed to $(default_config.random_seed) for reproducible results")
 	else
 		# This part is not fully implemented for all params, but sets the stage
 		base_config = load_config_from_file(config_path)
-		full_config_dict = JSON.parsefile(config_path)
+		full_config_dict = JSON.parsefile(config_path)  # Parse once here
 		ode_problems_to_test = get(full_config_dict, "ode_problems", ["lv_periodic"])
 		noise_levels = get(full_config_dict, "noise_levels", [0.0, 0.01])
 		println("... Loaded $(length(ode_problems_to_test)) ODEs and $(length(noise_levels)) noise levels from config.")
+		Random.seed!(base_config.random_seed)
+		println("... Set random seed to $(base_config.random_seed) for reproducible results")
 	end
 
 	println("Testing against $(length(ode_problems_to_test)) ODE models: $(join(ode_problems_to_test, ", "))")
@@ -558,12 +580,13 @@ function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 				BenchmarkConfig(example_name = ode_name, noise_level = noise_level)
 			else
 				# Re-create config for each run to correctly set noise/name
-				full_config_dict = JSON.parsefile(config_path)
+				# Using already-parsed full_config_dict from above
 				BenchmarkConfig(
 					example_name = ode_name,
 					noise_level = noise_level,
 					data_size = get(full_config_dict["data_config"], "data_size", 201),
 					derivative_orders = get(full_config_dict["data_config"], "derivative_orders", 4),
+					random_seed = get(full_config_dict["data_config"], "random_seed", 42),
 					methods = get(full_config_dict, "julia_methods", ["GPR", "BSpline5"]),
 				)
 			end

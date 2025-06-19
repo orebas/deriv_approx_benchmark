@@ -1,0 +1,39 @@
+I've done a comprehensive investigation of AAA_FullOpt stability issues and received an excellent analysis from the Zen thinkdeep tool. The key insights from that analysis were:
+
+1. **Discontinuous gradients**: The `jax.lax.cond` in barycentric_eval creates a discontinuous gradient that L-BFGS-B can't handle properly
+2. **Over-parameterization**: 3m parameters for m support points creates non-identifiability issues
+3. **Inadequate regularization**: Second derivative penalty only evaluated at data points, misses pathological behavior between points
+4. **Pole collision**: Support points clustering leads to ill-conditioning
+
+The suggested fixes were:
+1. Add separation penalty to prevent pole collision
+2. Improve regularization by evaluating on finer grid
+3. Replace jax.lax.cond with smooth approximation
+
+From my web search, I found that:
+- There's limited literature on differentiating barycentric rational interpolants w.r.t. nodes
+- Stable optimization of rational function poles is an active research area
+- Methods like Vector Fitting, RKFIT, and modifications to AAA exist for ensuring stable poles
+- The key challenges are maintaining stability, realness, and avoiding ill-conditioning
+
+Based on my diagnostic tests, I found:
+- Weight condition numbers grow dramatically with noise (100s to 1000s)
+- Support point gradients are significant and can be unstable
+- Perturbation sensitivity shows the optimization landscape is treacherous
+
+**My Critical Questions:**
+
+1. **Is the smooth approximation fix actually sound?** Replacing the discontinuous switch with a sigmoid seems like it could introduce other numerical issues. What if we're very close to a support point but not exactly on it? Won't the smooth transition create artificial gradients that don't reflect the true mathematical behavior?
+
+2. **Is over-parameterization the real culprit?** While it's true that 3m parameters is more than the 2m-1 degrees of freedom, many successful optimization methods deal with redundant parameterizations. Could the issue be more about the specific optimization landscape rather than just redundancy?
+
+3. **Practical implementation concerns**: The suggested fixes add hyperparameters (lambda_sep, tolerance for smooth switch, fine grid size). How sensitive are these to tuning? Could they make the method even less reliable in practice?
+
+4. **Alternative approaches**: Instead of trying to fix AAA_FullOpt, should we explore:
+   - A constrained optimization approach that maintains minimum separation distances?
+   - A two-stage approach: first optimize with frozen supports, then allow small perturbations?
+   - A different parameterization that avoids the identifiability issues?
+
+5. **Risk-benefit analysis**: Given that AAA_LS already works well, is the complexity and potential instability of AAA_FullOpt worth the theoretical benefit? When would AAA_FullOpt actually outperform AAA_LS enough to justify the risks?
+
+What's your assessment of these concerns and the practical trade-offs involved?

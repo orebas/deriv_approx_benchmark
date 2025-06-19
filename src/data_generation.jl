@@ -80,11 +80,12 @@ function generate_datasets(pep::ParameterEstimationProblem, config::BenchmarkCon
 end
 
 """
-    generate_noisy_data(clean_data, config)
+    generate_noisy_data(clean_data, config; rng=Random.GLOBAL_RNG)
 
 Add noise to clean data according to configuration.
+Uses the provided RNG for reproducible noise generation.
 """
-function generate_noisy_data(clean_data::OrderedDict, config::BenchmarkConfig)
+function generate_noisy_data(clean_data::OrderedDict, config::BenchmarkConfig; rng=Random.GLOBAL_RNG)
     noisy_data = OrderedDict{Any, Vector{Float64}}()
     
     for (key, values) in clean_data
@@ -94,11 +95,11 @@ function generate_noisy_data(clean_data::OrderedDict, config::BenchmarkConfig)
             if config.noise_type == "additive"
                 # Additive noise scaled by mean signal magnitude
                 noise_scale = config.noise_level * mean(abs.(values))
-                noise = noise_scale * randn(length(values))
+                noise = noise_scale * randn(rng, length(values))
                 noisy_data[key] = values + noise
             elseif config.noise_type == "multiplicative"
                 # Multiplicative noise
-                noise = 1 .+ config.noise_level * randn(length(values))
+                noise = 1 .+ config.noise_level * randn(rng, length(values))
                 noisy_data[key] = values .* noise
             else
                 error("Unknown noise type: $(config.noise_type)")

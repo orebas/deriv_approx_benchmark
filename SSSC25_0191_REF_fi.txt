@@ -1,0 +1,11 @@
+Hong, H., Ovchinnikov, A., Pogudin, G., and Yap, C.
+(2020). Global identifiability of differential models.
+Communications on Pure and Applied Mathematics,
+73(9), 1831–1879.
+Ovchinnikov, A., Bassik, O., Berman, Y., Go, S., Hong, H.,
+Ilmer, I., Rackauckas, C., Soto, P., and Yap, C. (2023).
+Robust parameter estimation for rational ordinary dif-
+ferential equations. URL https://arxiv.org/abs/23
+03.02159.
+Rasmussen, C.E. and Williams, C.K.I. (2006). Gaussian
+Processes for Machine Learning. The MIT Press

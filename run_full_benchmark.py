@@ -13,11 +13,35 @@ from datetime import datetime
 import os
 import glob
 from pathlib import Path
+import logging
+import sys
 
 # Import all method creation functions
 from comprehensive_methods_library import create_all_methods as create_base_methods
 from enhanced_gp_methods import create_enhanced_gp_methods
 import json
+
+def setup_logging():
+    """Setup logging to file and console."""
+    os.makedirs("unified_analysis", exist_ok=True)
+    
+    # Create log file with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = os.path.join("unified_analysis", f"python_benchmark_{timestamp}.log")
+    
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    
+    logging.info(f"Python benchmark logging initialized - log file: {log_file}")
+    return log_file
 
 def discover_and_load_test_cases():
     """
@@ -25,13 +49,13 @@ def discover_and_load_test_cases():
     Returns a list of dictionaries, each containing the paths to the data
     and metadata for a specific test run.
     """
-    print("🔎 DISCOVERING TEST CASES FROM 'test_data' DIRECTORY")
-    print("="*50)
+    logging.info("🔎 DISCOVERING TEST CASES FROM 'test_data' DIRECTORY")
+    logging.info("="*50)
     
     test_data_dir = "test_data"
     if not os.path.exists(test_data_dir):
-        print(f"FATAL: '{test_data_dir}' directory not found.")
-        print("Please run the Julia benchmark script first to generate the test data.")
+        logging.error(f"FATAL: '{test_data_dir}' directory not found.")
+        logging.error("Please run the Julia benchmark script first to generate the test data.")
         return []
 
     test_cases = []
@@ -44,7 +68,7 @@ def discover_and_load_test_cases():
         truth_path = p.parent / "truth_data.csv"
         
         if not truth_path.exists():
-            print(f"Warning: Missing truth_data.csv for {noisy_path}. Skipping.")
+            logging.warning(f"Missing truth_data.csv for {noisy_path}. Skipping.")
             continue
             
         parts = p.parts
@@ -58,14 +82,14 @@ def discover_and_load_test_cases():
             'truth_data_path': str(truth_path)
         })
         
-    print(f"Found {len(test_cases)} test cases to run.")
+    logging.info(f"Found {len(test_cases)} test cases to run.")
     return sorted(test_cases, key=lambda x: (x['ode_name'], x['noise_level']))
 
 def run_full_benchmark():
     """Run the comprehensive benchmark across all discovered test cases."""
     
-    print("\n🚀 RUNNING FULL PYTHON BENCHMARK (DATA-DRIVEN)")
-    print("="*60)
+    logging.info("\n🚀 RUNNING FULL PYTHON BENCHMARK (DATA-DRIVEN)")
+    logging.info("="*60)
     
     test_cases = discover_and_load_test_cases()
     if not test_cases:
@@ -78,7 +102,7 @@ def run_full_benchmark():
         ode_name = test_case['ode_name']
         noise_level = test_case['noise_level']
         
-        print(f"\n--- Test Case {case_idx+1}/{len(test_cases)}: {ode_name} @ Noise {noise_level:.1e} ---")
+        logging.info(f"\n--- Test Case {case_idx+1}/{len(test_cases)}: {ode_name} @ Noise {noise_level:.1e} ---")
         
         # Load the data
         noisy_df = pd.read_csv(test_case['noisy_data_path'])
@@ -90,7 +114,7 @@ def run_full_benchmark():
         observables = [col for col in noisy_df.columns if col != 't']
         
         for obs in observables:
-            print(f"  Observable: {obs}")
+            logging.info(f"  Observable: {obs}")
             y_noisy = noisy_df[obs].values
             
             # Re-initialize methods with the current noisy data
@@ -108,14 +132,14 @@ def run_full_benchmark():
 
                 # Create only base methods that are in config
                 all_base_methods = create_base_methods(t, y_noisy)
-                print("\nDEBUG: Available base methods:", sorted(list(all_base_methods.keys())))
-                print("DEBUG: Configured base methods:", enabled_base_methods)
+                logging.debug("Available base methods: %s", sorted(list(all_base_methods.keys())))
+                logging.debug("Configured base methods: %s", enabled_base_methods)
                 
                 for method_name in enabled_base_methods:
                     if method_name in all_base_methods:
                         current_methods[method_name] = all_base_methods[method_name]
                     else:
-                        print(f"DEBUG: Configured method '{method_name}' not found in available methods!")
+                        logging.warning(f"Configured method '{method_name}' not found in available methods!")
                 
                 # Create only enhanced GP methods that are in config
                 all_gp_methods = create_enhanced_gp_methods(t, y_noisy)
@@ -123,17 +147,17 @@ def run_full_benchmark():
                     if method_name in all_gp_methods:
                         current_methods[method_name] = all_gp_methods[method_name]
                         
-                print(f" (Using {len(current_methods)} configured methods)")
+                logging.info(f" (Using {len(current_methods)} configured methods)")
                 
             except (FileNotFoundError, json.JSONDecodeError):
                 # Fallback to all methods if config not found
                 current_methods.update(create_base_methods(t, y_noisy))
                 current_methods.update(create_enhanced_gp_methods(t, y_noisy))
                 max_deriv_from_config = 4  # Default fallback
-                print(f" (Using all {len(current_methods)} methods - no config found)")
+                logging.info(f" (Using all {len(current_methods)} methods - no config found)")
 
             for method_name, method in current_methods.items():
-                print(f"    Testing {method_name:25s}...", end="", flush=True)
+                method_start_time = time.time()
                 
                 try:
                     start_time = time.time()
@@ -144,7 +168,8 @@ def run_full_benchmark():
                     eval_time = time.time() - start_time
                     
                     if results.get('success', True):
-                        print(" ✓")
+                        method_elapsed = time.time() - method_start_time
+                        logging.info(f"    ✓ {method_name:25s} completed in {method_elapsed:.3f}s")
                         for deriv_order in range(max_deriv + 1):
                             y_pred = results.get('y' if deriv_order == 0 else f'd{deriv_order}')
                             
@@ -185,7 +210,8 @@ def run_full_benchmark():
                                 'success': True
                             })
                     else:
-                        print(" ❌ Failed")
+                        method_elapsed = time.time() - method_start_time
+                        logging.warning(f"    ❌ {method_name:25s} failed after {method_elapsed:.3f}s")
                         # Log failure for all derivative orders
                         for deriv_order in range(max_deriv + 1):
                              all_results.append({
@@ -197,7 +223,8 @@ def run_full_benchmark():
                             })
                 
                 except Exception as e:
-                    print(f" ❌ Error: {str(e)[:50]}")
+                    method_elapsed = time.time() - method_start_time
+                    logging.error(f"    ❌ {method_name:25s} error after {method_elapsed:.3f}s: {str(e)[:50]}")
                     method_max_deriv = getattr(method, 'max_derivative_supported', 7)
                     max_deriv = min(max_deriv_from_config, method_max_deriv)
                     for deriv_order in range(max_deriv + 1):
@@ -211,7 +238,7 @@ def run_full_benchmark():
 
     # --- Save Raw Results ---
     if not all_results:
-        print("\nNo results were generated. Exiting.")
+        logging.error("No results were generated. Exiting.")
         return
 
     results_df = pd.DataFrame(all_results)
@@ -222,8 +249,20 @@ def run_full_benchmark():
     output_file = "results/python_raw_benchmark.csv"
     results_df.to_csv(output_file, index=False)
 
-    print(f"\n🎉 FULL PYTHON BENCHMARK COMPLETE!")
-    print(f"📁 Raw Python results saved to: {output_file}")
+    logging.info(f"\n🎉 FULL PYTHON BENCHMARK COMPLETE!")
+    logging.info(f"📁 Raw Python results saved to: {output_file}")
 
 if __name__ == "__main__":
-    run_full_benchmark() 
+    # Setup logging first
+    log_file = setup_logging()
+    start_time = time.time()
+    
+    try:
+        run_full_benchmark()
+        elapsed_time = time.time() - start_time
+        logging.info(f"🎉 Python benchmark completed successfully in {elapsed_time:.1f} seconds ({elapsed_time/60:.1f} minutes)")
+        logging.info(f"📝 Full log saved to: {log_file}")
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        logging.error(f"❌ Python benchmark failed after {elapsed_time:.1f} seconds: {e}")
+        raise 

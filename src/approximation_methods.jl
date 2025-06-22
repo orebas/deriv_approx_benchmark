@@ -12,6 +12,9 @@ using Suppressor
 using Symbolics
 using NoiseRobustDifferentiation
 
+# Include the new Julia AAA methods
+include("julia_aaa_final.jl")
+
 # Wrapper struct for approximation functions with custom derivative methods
 struct ApproximationWrapper
     func::Function
@@ -101,7 +104,12 @@ end
 Evaluate a single approximation method.
 """
 function evaluate_single_method(method_name::String, t, y, t_eval, config::BenchmarkConfig)
-    # Create approximation function
+    # Check if this is one of the new Julia AAA methods
+    if method_name in ["JuliaAAALS", "JuliaAAAFullOpt", "JuliaAAATwoStage", "JuliaAAASmoothBary"]
+        return evaluate_julia_aaa_method(method_name, t, y, t_eval, config)
+    end
+    
+    # Create approximation function for existing methods
     approx_func = if method_name == "GPR"
         create_gpr_approximation(t, y, config)
     elseif method_name == "AAA"
@@ -130,6 +138,76 @@ function evaluate_single_method(method_name::String, t, y, t_eval, config::Bench
     end
     
     return result
+end
+
+"""
+    evaluate_julia_aaa_method(method_name, t, y, t_eval, config)
+
+Evaluate one of the new Julia AAA methods.
+"""
+function evaluate_julia_aaa_method(method_name::String, t, y, t_eval, config::BenchmarkConfig)
+    # Create the appropriate Julia AAA method
+    method = if method_name == "JuliaAAALS"
+        JuliaAAALS(config.aaa_tol_high, config.aaa_max_degree)
+    elseif method_name == "JuliaAAAFullOpt"
+        JuliaAAAFullOpt(config.aaa_tol_high, min(config.aaa_max_degree, 25))
+    elseif method_name == "JuliaAAATwoStage"
+        JuliaAAATwoStage(config.aaa_tol_high, config.aaa_max_degree)
+    elseif method_name == "JuliaAAASmoothBary"
+        JuliaAAASmoothBary(config.aaa_tol_high, config.aaa_max_degree)
+    else
+        error("Unknown Julia AAA method: $method_name")
+    end
+    
+    # Fit the method
+    try
+        fit!(method, t, y)
+        
+        if !method.success
+            @warn "Julia AAA method $method_name failed to fit"
+            # Return NaN results
+            result = Dict{String, Any}()
+            result["y"] = fill(NaN, length(t_eval))
+            for d in 1:config.derivative_orders
+                result["d$d"] = fill(NaN, length(t_eval))
+            end
+            return result
+        end
+        
+        # Get function values at data points for creating differentiable approximation
+        y_fitted = evaluate(method, t, 0)
+        
+        # Create a differentiable approximation using aaad
+        differentiable_approx = aaad(t, y_fitted)
+        
+        # Evaluate the method
+        result = Dict{String, Any}()
+        
+        # Function values
+        result["y"] = [differentiable_approx(x) for x in t_eval]
+        
+        # Derivatives using nth_deriv_at
+        for d in 1:config.derivative_orders
+            try
+                result["d$d"] = [nth_deriv_at(differentiable_approx, d, x) for x in t_eval]
+            catch e
+                @warn "Error computing derivative order $d for $method_name: $e"
+                result["d$d"] = fill(NaN, length(t_eval))
+            end
+        end
+        
+        return result
+        
+    catch e
+        @warn "Error in Julia AAA method $method_name: $e"
+        # Return NaN results
+        result = Dict{String, Any}()
+        result["y"] = fill(NaN, length(t_eval))
+        for d in 1:config.derivative_orders
+            result["d$d"] = fill(NaN, length(t_eval))
+        end
+        return result
+    end
 end
 
 """

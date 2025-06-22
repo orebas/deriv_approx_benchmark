@@ -36,6 +36,16 @@ using Symbolics
 using CSV
 using ArgParse
 using JSON
+using Logging
+
+# Try to use LoggingExtras if available, fallback to basic logging
+global HAS_LOGGING_EXTRAS = false
+try
+    using LoggingExtras
+    global HAS_LOGGING_EXTRAS = true
+catch
+    global HAS_LOGGING_EXTRAS = false
+end
 
 # Load the examples
 # To make this script more portable, we assume the example model files
@@ -363,7 +373,7 @@ function evaluate_all_methods(datasets, pep, config::BenchmarkConfig)
 		end
 
 		if config.verbose
-			println("  Processing observable: $key")
+			@info "  Processing observable: $key"
 		end
 
 		results[key] = Dict{String, Any}()
@@ -372,11 +382,7 @@ function evaluate_all_methods(datasets, pep, config::BenchmarkConfig)
 		y = datasets.noisy[key]
 
 		for method in config.methods
-			if config.verbose
-				print("    - $method...")
-			end
-
-			start_time = time()
+			method_start_time = time()
 
 			try
 				# Create approximation function or object
@@ -418,7 +424,7 @@ function evaluate_all_methods(datasets, pep, config::BenchmarkConfig)
 					end
 				end
 
-				method_result["computation_time"] = time() - start_time
+				method_result["computation_time"] = time() - method_start_time
 
 				# Calculate errors
 				error_dict = Dict{String, NamedTuple}()
@@ -445,11 +451,11 @@ function evaluate_all_methods(datasets, pep, config::BenchmarkConfig)
 				results[key][method] = method_result
 
 				if config.verbose
-					println(" done ($(round(method_result["computation_time"], digits=3))s)")
+					@info "    ✓ $method completed in $(round(method_result["computation_time"], digits=3))s"
 				end
 			catch e
 				if config.verbose
-					println(" failed: $(typeof(e))")
+					@error "    ✗ $method failed: $(typeof(e))"
 				end
 				@warn "Method $method failed for $key" exception=e
 			end
@@ -509,7 +515,7 @@ end
 Load configuration from a JSON file and merge with defaults.
 """
 function load_config_from_file(file_path::String)
-	println("... Loading configuration from $file_path")
+	@info "... Loading configuration from $file_path"
 	config_dict = JSON.parsefile(file_path)
 
 	# Extract parameters and merge them into the BenchmarkConfig constructor
@@ -524,15 +530,50 @@ function load_config_from_file(file_path::String)
 end
 
 """
+Setup logging to file and console.
+"""
+function setup_logging()
+	# Ensure unified_analysis directory exists
+	mkpath("./unified_analysis")
+	
+	# Create log file with timestamp
+	timestamp = Dates.format(now(), "yyyymmdd_HHMMSS")
+	log_file = joinpath("unified_analysis", "julia_benchmark_$(timestamp).log")
+	
+	if HAS_LOGGING_EXTRAS
+		# Create file logger
+		file_logger = SimpleLogger(open(log_file, "w"))
+		
+		# Create console logger
+		console_logger = ConsoleLogger(stdout, Logging.Info)
+		
+		# Combine both loggers
+		global_logger(TeeLogger(console_logger, file_logger))
+	else
+		# Fallback to console logging only
+		global_logger(ConsoleLogger(stdout, Logging.Info))
+		println("Warning: LoggingExtras not available, logging to console only")
+	end
+	
+	@info "Julia benchmark logging initialized" log_file=log_file
+	
+	return log_file
+end
+
+"""
 Main benchmark function.
 """
 function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 	mkpath("./results") # Ensure output directory
 	mkpath("./test_data") # Ensure data export directory
+	
+	# Setup logging
+	log_file = setup_logging()
+	start_time = time()
 
-	println("="^60)
-	println("RUNNING FULL JULIA BENCHMARK SWEEP (CONFIG-DRIVEN)")
-	println("="^60)
+	@info "="^60
+	@info "RUNNING FULL JULIA BENCHMARK SWEEP (CONFIG-DRIVEN)"
+	@info "="^60
 
 	# 1. LOAD CONFIGURATION
 	# --------------------------
@@ -540,24 +581,24 @@ function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 	full_config_dict = Dict{String,Any}()
 	
 	if isnothing(config_path)
-		println("... No config file provided, using default settings.")
+		@info "... No config file provided, using default settings."
 		default_config = BenchmarkConfig()
 		ode_problems_to_test = ["lv_periodic"]
 		noise_levels = [0.0, 0.01]
 		Random.seed!(default_config.random_seed)
-		println("... Set random seed to $(default_config.random_seed) for reproducible results")
+		@info "... Set random seed to $(default_config.random_seed) for reproducible results"
 	else
 		# This part is not fully implemented for all params, but sets the stage
 		base_config = load_config_from_file(config_path)
 		full_config_dict = JSON.parsefile(config_path)  # Parse once here
 		ode_problems_to_test = get(full_config_dict, "ode_problems", ["lv_periodic"])
 		noise_levels = get(full_config_dict, "noise_levels", [0.0, 0.01])
-		println("... Loaded $(length(ode_problems_to_test)) ODEs and $(length(noise_levels)) noise levels from config.")
+		@info "... Loaded $(length(ode_problems_to_test)) ODEs and $(length(noise_levels)) noise levels from config."
 		Random.seed!(base_config.random_seed)
-		println("... Set random seed to $(base_config.random_seed) for reproducible results")
+		@info "... Set random seed to $(base_config.random_seed) for reproducible results"
 	end
 
-	println("Testing against $(length(ode_problems_to_test)) ODE models: $(join(ode_problems_to_test, ", "))")
+	@info "Testing against $(length(ode_problems_to_test)) ODE models: $(join(ode_problems_to_test, ", "))"
 
 	# 2. SETUP BENCHMARK PARAMETERS
 	# -------------------------------
@@ -566,9 +607,9 @@ function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 	# 3. MAIN LOOP OVER ODES AND NOISE
 	# ----------------------------------
 	for ode_name in ode_problems_to_test
-		println("\n" * "-"^50)
-		println("🚀 Starting test case: $ode_name")
-		println("-"^50)
+		@info "\n" * "-"^50
+		@info "🚀 Starting test case: $ode_name"
+		@info "-"^50
 
 		# Load the ODE problem dynamically using the functions from the included files
 		model_func = getfield(Main, Symbol(ode_name))
@@ -616,8 +657,13 @@ function run_full_sweep(config_path::Union{String, Nothing} = nothing)
 	output_file = "results/julia_raw_benchmark.csv"
 	CSV.write(output_file, all_results_df)
 
-	println("\n🎉 FULL JULIA BENCHMARK SWEEP COMPLETE!")
-	println("📁 Raw Julia results for all ODEs saved to: $(output_file)")
+	# Calculate total elapsed time
+	elapsed_time = time() - start_time
+	
+	@info "\n🎉 FULL JULIA BENCHMARK SWEEP COMPLETE!"
+	@info "📁 Raw Julia results for all ODEs saved to: $(output_file)"
+	@info "⏱️  Total runtime: $(round(elapsed_time, digits=1)) seconds ($(round(elapsed_time/60, digits=1)) minutes)"
+	@info "📝 Full log saved to: $log_file"
 end
 
 """

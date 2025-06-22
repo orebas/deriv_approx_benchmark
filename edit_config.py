@@ -214,7 +214,8 @@ def edit_derivative_orders(config):
 
 def toggle_julia_methods(config):
     """Toggle Julia methods on/off."""
-    all_methods = ["GPR", "AAA", "AAA_lowpres", "LOESS", "BSpline5", "TVDiff"]
+    all_methods = ["GPR", "AAA", "AAA_lowpres", "LOESS", "BSpline5", "TVDiff", 
+                   "JuliaAAALS", "JuliaAAAFullOpt", "JuliaAAATwoStage", "JuliaAAASmoothBary"]
     
     print("\n📐 Toggle Julia Methods:")
     for i, method in enumerate(all_methods, 1):

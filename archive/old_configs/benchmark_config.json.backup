@@ -2,26 +2,22 @@
   "description": "Centralized configuration for derivative approximation benchmark",
   "version": "1.0",
   "ode_problems": [
-    "lv_periodic",
-    "vanderpol",
-    "brusselator",
-    "fitzhugh_nagumo",
-    "seir"
+    "lv_periodic"
   ],
   "noise_levels": [
-    0.0
+    0.0,
+    0.001,
+    0.01
   ],
   "data_config": {
     "data_size": 201,
-    "derivative_orders": 4,
+    "derivative_orders": 5,
     "random_seed": 42
   },
   "julia_methods": [
-    "GPR",
     "AAA",
     "AAA_lowpres",
-    "LOESS",
-    "BSpline5",
+    "GPR",
     "TVDiff",
     "JuliaAAALS",
     "JuliaAAAFullOpt",
@@ -30,30 +26,14 @@
   ],
   "python_methods": {
     "base_methods": [
-      "AAA_FullOpt",
       "AAA_LS",
+      "Butterworth",
+      "AAA_FullOpt",
       "AAA_SmoothBary",
       "AAA_TwoStage",
-      "Butterworth",
-      "Chebyshev",
-      "CubicSpline",
-      "FiniteDiff",
-      "Fourier",
-      "GP_Matern",
-      "GP_RBF",
-      "KalmanGrad",
-      "Polynomial",
-      "RBF_Multiquadric",
-      "RBF_ThinPlate",
-      "RandomForest",
-      "SVR",
-      "SavitzkyGolay",
-      "SmoothingSpline"
+      "KalmanGrad"
     ],
     "enhanced_gp_methods": [
-      "GP_Matern_1.5",
-      "GP_Matern_2.5",
-      "GP_Periodic",
       "GP_RBF_Iso"
     ]
   },

@@ -95,7 +95,7 @@ function BenchmarkConfig(;
 	random_seed = 42,
 	verbose = true,
 	gpr_jitter = 1e-8,
-	gpr_noise_threshold = 1e-5,
+	gpr_noise_threshold = 1e-12,
 	aaa_tol_low = 0.1,
 	aaa_tol_high = 1e-14,
 	aaa_max_degree = 48,

@@ -1,0 +1,325 @@
+2025-07-01 11:30:13 [INFO] 🎯 UNIFIED DERIVATIVE APPROXIMATION BENCHMARK
+2025-07-01 11:30:13 [INFO] ==================================================
+2025-07-01 11:30:13 [INFO] Log file: unified_analysis/benchmark_run_20250701_113013.log
+2025-07-01 11:30:13 [INFO] Loading configuration from benchmark_config.json
+2025-07-01 11:30:13 [INFO] ✓ Loaded configuration
+2025-07-01 11:30:13 [INFO]   - ODE problems: 5
+2025-07-01 11:30:13 [INFO]   - Noise levels: 3
+2025-07-01 11:30:13 [INFO]   - Julia methods: 3
+2025-07-01 11:30:13 [INFO]   - Python methods: 1
+2025-07-01 11:30:13 [INFO] ✓ Cleaned results/
+2025-07-01 11:30:13 [INFO] ✓ Cleaned test_data/
+2025-07-01 11:30:13 [INFO] 
+🚀 Running Julia benchmark...
+2025-07-01 11:30:13 [INFO] Command: julia benchmark_derivatives.jl --config benchmark_config.json
+2025-07-01 11:31:02 [INFO] JULIA[OUT] Warning: LoggingExtras not available, logging to console only
+2025-07-01 11:31:03 [INFO] JULIA[OUT] ┌ Info: Julia benchmark logging initialized
+2025-07-01 11:31:03 [INFO] JULIA[OUT] └   log_file = "unified_analysis/julia_benchmark_20250701_113102.log"
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: ============================================================
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: RUNNING FULL JULIA BENCHMARK SWEEP (CONFIG-DRIVEN)
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: ============================================================
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: ... Loading configuration from benchmark_config.json
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: ... Loaded 5 ODEs and 3 noise levels from config.
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: ... Set random seed to 42 for reproducible results
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: Testing against 5 ODE models: lv_periodic, vanderpol, brusselator, fitzhugh_nagumo, seir
+2025-07-01 11:31:03 [INFO] JULIA[OUT] ┌ Info:
+2025-07-01 11:31:03 [INFO] JULIA[OUT] └ --------------------------------------------------
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: 🚀 Starting test case: lv_periodic
+2025-07-01 11:31:03 [INFO] JULIA[OUT] [ Info: --------------------------------------------------
+2025-07-01 11:32:01 [INFO] JULIA[OUT]   Processing observable: r(t)
+2025-07-01 11:32:11 [INFO] JULIA[OUT]     - GPR... done (10.327s)
+2025-07-01 11:32:12 [INFO] JULIA[OUT]     - AAA... done (0.012s)
+2025-07-01 11:32:13 [INFO] JULIA[OUT]     - JuliaAAALS... done (1.506s)
+2025-07-01 11:32:14 [INFO] JULIA[OUT]   Processing observable: r(t)
+2025-07-01 11:32:15 [INFO] JULIA[OUT]     - GPR... done (0.46s)
+2025-07-01 11:32:15 [INFO] JULIA[OUT]     - AAA... done (0.261s)
+2025-07-01 11:32:16 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.57s)
+2025-07-01 11:32:16 [INFO] JULIA[OUT]   Processing observable: r(t)
+2025-07-01 11:32:38 [INFO] JULIA[OUT]     - GPR... done (21.322s)
+2025-07-01 11:32:38 [INFO] JULIA[OUT]     - AAA... done (0.277s)
+2025-07-01 11:32:38 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.403s)
+2025-07-01 11:32:38 [INFO] JULIA[OUT] ┌ Info:
+2025-07-01 11:32:38 [INFO] JULIA[OUT] └ --------------------------------------------------
+2025-07-01 11:32:38 [INFO] JULIA[OUT] [ Info: 🚀 Starting test case: vanderpol
+2025-07-01 11:32:38 [INFO] JULIA[OUT] [ Info: --------------------------------------------------
+2025-07-01 11:32:50 [INFO] JULIA[OUT]   Processing observable: x1(t)
+2025-07-01 11:32:50 [INFO] JULIA[OUT]     - GPR... done (0.101s)
+2025-07-01 11:32:50 [INFO] JULIA[OUT]     - AAA... done (0.006s)
+2025-07-01 11:32:50 [INFO] JULIA[OUT]     - JuliaAAALS...3.325  0.0  5.0
+2025-07-01 11:32:50 [INFO] JULIA[OUT] 3.325  0.0  5.0
+2025-07-01 11:32:51 [INFO] JULIA[OUT]  done (0.434s)
+2025-07-01 11:32:51 [INFO] JULIA[OUT]   Processing observable: x2(t)
+2025-07-01 11:32:51 [INFO] JULIA[OUT]     - GPR... done (0.109s)
+2025-07-01 11:32:51 [INFO] JULIA[OUT]     - AAA... done (0.013s)
+2025-07-01 11:32:51 [INFO] JULIA[OUT]     - JuliaAAALS...2.5  1.9  5.0
+2025-07-01 11:32:52 [INFO] JULIA[OUT]  done (1.085s)
+2025-07-01 11:32:52 [INFO] JULIA[OUT]   Processing observable: x1(t)
+2025-07-01 11:32:53 [INFO] JULIA[OUT]     - GPR... done (0.454s)
+2025-07-01 11:32:53 [INFO] JULIA[OUT]     - AAA... done (0.264s)
+2025-07-01 11:32:53 [INFO] JULIA[OUT]     - JuliaAAALS...3.325  0.0  5.0
+2025-07-01 11:32:53 [INFO] JULIA[OUT] 3.325  0.0  5.0
+2025-07-01 11:32:53 [INFO] JULIA[OUT]  done (0.467s)
+2025-07-01 11:32:53 [INFO] JULIA[OUT]   Processing observable: x2(t)
+2025-07-01 11:32:54 [INFO] JULIA[OUT]     - GPR... done (0.327s)
+2025-07-01 11:32:54 [INFO] JULIA[OUT]     - AAA... done (0.23s)
+2025-07-01 11:32:54 [INFO] JULIA[OUT]     - JuliaAAALS...2.5  1.9  5.0
+2025-07-01 11:32:54 [INFO] JULIA[OUT]  done (0.434s)
+2025-07-01 11:32:55 [INFO] JULIA[OUT]   Processing observable: x1(t)
+2025-07-01 11:32:55 [INFO] JULIA[OUT]     - GPR... done (0.224s)
+2025-07-01 11:32:55 [INFO] JULIA[OUT]     - AAA... done (0.193s)
+2025-07-01 11:32:55 [INFO] JULIA[OUT]     - JuliaAAALS...3.325  0.0  5.0
+2025-07-01 11:32:55 [INFO] JULIA[OUT] 3.325  0.0  5.0
+2025-07-01 11:32:56 [INFO] JULIA[OUT]  done (0.347s)
+2025-07-01 11:32:56 [INFO] JULIA[OUT]   Processing observable: x2(t)
+2025-07-01 11:32:56 [INFO] JULIA[OUT]     - GPR... done (0.237s)
+2025-07-01 11:32:56 [INFO] JULIA[OUT]     - AAA... done (0.235s)
+2025-07-01 11:32:56 [INFO] JULIA[OUT]     - JuliaAAALS...2.5  1.9  5.0
+2025-07-01 11:32:56 [INFO] JULIA[OUT]  done (0.471s)
+2025-07-01 11:32:56 [INFO] JULIA[OUT] ┌ Info:
+2025-07-01 11:32:56 [INFO] JULIA[OUT] └ --------------------------------------------------
+2025-07-01 11:32:56 [INFO] JULIA[OUT] [ Info: 🚀 Starting test case: brusselator
+2025-07-01 11:32:56 [INFO] JULIA[OUT] [ Info: --------------------------------------------------
+2025-07-01 11:33:13 [INFO] JULIA[OUT]   Processing observable: X(t)
+2025-07-01 11:33:13 [INFO] JULIA[OUT]     - GPR... done (0.324s)
+2025-07-01 11:33:13 [INFO] JULIA[OUT]     - AAA... done (0.064s)
+2025-07-01 11:33:13 [INFO] JULIA[OUT]     - JuliaAAALS...6.8  1.6  6.9
+2025-07-01 11:33:13 [INFO] JULIA[OUT] 6.8  1.6  6.9
+2025-07-01 11:33:15 [INFO] JULIA[OUT]  done (1.562s)
+2025-07-01 11:33:15 [INFO] JULIA[OUT]   Processing observable: Y(t)
+2025-07-01 11:33:15 [INFO] JULIA[OUT]     - GPR... done (0.358s)
+2025-07-01 11:33:15 [INFO] JULIA[OUT]     - AAA... done (0.145s)
+2025-07-01 11:33:15 [INFO] JULIA[OUT]     - JuliaAAALS...7.0  5.7  7.1
+2025-07-01 11:33:16 [INFO] JULIA[OUT]  done (0.579s)
+2025-07-01 11:33:18 [INFO] JULIA[OUT]   Processing observable: X(t)
+2025-07-01 11:33:18 [INFO] JULIA[OUT]     - GPR... done (0.303s)
+2025-07-01 11:33:18 [INFO] JULIA[OUT]     - AAA... done (0.2s)
+2025-07-01 11:33:18 [INFO] JULIA[OUT]     - JuliaAAALS...6.8  1.6  6.9
+2025-07-01 11:33:18 [INFO] JULIA[OUT] 6.8  1.6  6.9
+2025-07-01 11:33:19 [INFO] JULIA[OUT]  done (0.724s)
+2025-07-01 11:33:19 [INFO] JULIA[OUT]   Processing observable: Y(t)
+2025-07-01 11:33:19 [INFO] JULIA[OUT]     - GPR... done (0.337s)
+2025-07-01 11:33:20 [INFO] JULIA[OUT]     - AAA... done (0.2s)
+2025-07-01 11:33:20 [INFO] JULIA[OUT]     - JuliaAAALS...7.0  5.7  7.1
+2025-07-01 11:33:20 [INFO] JULIA[OUT]  done (0.79s)
+2025-07-01 11:33:22 [INFO] JULIA[OUT]   Processing observable: X(t)
+2025-07-01 11:33:22 [INFO] JULIA[OUT]     - GPR... done (0.307s)
+2025-07-01 11:33:23 [INFO] JULIA[OUT]     - AAA... done (0.18s)
+2025-07-01 11:33:26 [INFO] JULIA[OUT]     - JuliaAAALS... done (3.643s)
+2025-07-01 11:33:26 [INFO] JULIA[OUT]   Processing observable: Y(t)
+2025-07-01 11:33:27 [INFO] JULIA[OUT]     - GPR... done (0.274s)
+2025-07-01 11:33:27 [INFO] JULIA[OUT]     - AAA... done (0.206s)
+2025-07-01 11:33:27 [INFO] JULIA[OUT]     - JuliaAAALS...7.0  5.7  7.1
+2025-07-01 11:33:28 [INFO] JULIA[OUT]  done (0.925s)
+2025-07-01 11:33:28 [INFO] JULIA[OUT] ┌ Info:
+2025-07-01 11:33:28 [INFO] JULIA[OUT] └ --------------------------------------------------
+2025-07-01 11:33:28 [INFO] JULIA[OUT] [ Info: 🚀 Starting test case: fitzhugh_nagumo
+2025-07-01 11:33:28 [INFO] JULIA[OUT] [ Info: --------------------------------------------------
+2025-07-01 11:33:42 [INFO] JULIA[OUT]   Processing observable: V(t)
+2025-07-01 11:33:42 [INFO] JULIA[OUT]     - GPR... done (0.586s)
+2025-07-01 11:33:42 [INFO] JULIA[OUT]     - AAA... done (0.002s)
+2025-07-01 11:33:42 [INFO] JULIA[OUT]     - JuliaAAALS...0.0237  0.0  0.03
+2025-07-01 11:33:44 [INFO] JULIA[OUT]  done (1.863s)
+2025-07-01 11:33:45 [INFO] JULIA[OUT]   Processing observable: V(t)
+2025-07-01 11:33:45 [INFO] JULIA[OUT]     - GPR... done (0.243s)
+2025-07-01 11:33:45 [INFO] JULIA[OUT]     - AAA... done (0.265s)
+2025-07-01 11:33:46 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.476s)
+2025-07-01 11:33:46 [INFO] JULIA[OUT]   Processing observable: V(t)
+2025-07-01 11:33:46 [INFO] JULIA[OUT]     - GPR... done (0.23s)
+2025-07-01 11:33:47 [INFO] JULIA[OUT]     - AAA... done (0.212s)
+2025-07-01 11:33:47 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.381s)
+2025-07-01 11:33:47 [INFO] JULIA[OUT] ┌ Info:
+2025-07-01 11:33:47 [INFO] JULIA[OUT] └ --------------------------------------------------
+2025-07-01 11:33:47 [INFO] JULIA[OUT] [ Info: 🚀 Starting test case: seir
+2025-07-01 11:33:47 [INFO] JULIA[OUT] [ Info: --------------------------------------------------
+2025-07-01 11:34:01 [INFO] JULIA[OUT]   Processing observable: In(t)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]     - GPR... done (0.11s)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]     - AAA... done (0.009s)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.256s)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]   Processing observable: N(t)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]     - GPR... done (0.476s)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]     - AAA... done (0.001s)
+2025-07-01 11:34:01 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.055s)
+2025-07-01 11:34:02 [INFO] JULIA[OUT]   Processing observable: In(t)
+2025-07-01 11:34:02 [INFO] JULIA[OUT]     - GPR... done (0.512s)
+2025-07-01 11:34:03 [INFO] JULIA[OUT]     - AAA... done (1.062s)
+2025-07-01 11:34:04 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.478s)
+2025-07-01 11:34:04 [INFO] JULIA[OUT]   Processing observable: N(t)
+2025-07-01 11:34:04 [INFO] JULIA[OUT]     - GPR... done (0.532s)
+2025-07-01 11:34:05 [INFO] JULIA[OUT]     - AAA... done (0.256s)
+2025-07-01 11:34:05 [INFO] JULIA[OUT]     - JuliaAAALS...47.7  35.4  48.6
+2025-07-01 11:34:05 [INFO] JULIA[OUT] 47.7  35.4  48.6
+2025-07-01 11:34:05 [INFO] JULIA[OUT]  done (0.414s)
+2025-07-01 11:34:05 [INFO] JULIA[OUT]   Processing observable: In(t)
+2025-07-01 11:34:06 [INFO] JULIA[OUT]     - GPR... done (0.281s)
+2025-07-01 11:34:06 [INFO] JULIA[OUT]     - AAA... done (0.316s)
+2025-07-01 11:34:07 [INFO] JULIA[OUT]     - JuliaAAALS... done (0.743s)
+2025-07-01 11:34:07 [INFO] JULIA[OUT]   Processing observable: N(t)
+2025-07-01 11:34:07 [INFO] JULIA[OUT]     - GPR... done (0.415s)
+2025-07-01 11:34:07 [INFO] JULIA[OUT]     - AAA... done (0.264s)
+2025-07-01 11:34:07 [INFO] JULIA[OUT]     - JuliaAAALS...55.8  51.9  56.1
+2025-07-01 11:34:08 [INFO] JULIA[OUT]  done (0.43s)
+2025-07-01 11:34:08 [INFO] JULIA[OUT] ┌ Info:
+2025-07-01 11:34:08 [INFO] JULIA[OUT] └ 🎉 FULL JULIA BENCHMARK SWEEP COMPLETE!
+2025-07-01 11:34:08 [INFO] JULIA[OUT] [ Info: 📁 Raw Julia results for all ODEs saved to: results/julia_raw_benchmark.csv
+2025-07-01 11:34:08 [INFO] JULIA[OUT] [ Info: ⏱️  Total runtime: 185.1 seconds (3.1 minutes)
+2025-07-01 11:34:08 [INFO] JULIA[OUT] [ Info: 📝 Full log saved to: unified_analysis/julia_benchmark_20250701_113102.log
+2025-07-01 11:34:09 [INFO] ✅ Julia benchmark completed successfully in 235.6 seconds
+2025-07-01 11:34:09 [INFO] 
+🐍 Running Python benchmark...
+2025-07-01 11:34:09 [INFO] Command: python3 run_full_benchmark.py
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO] Python benchmark logging initialized - log file: unified_analysis/python_benchmark_20250701_113410.log
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO]
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 🚀 RUNNING FULL PYTHON BENCHMARK (DATA-DRIVEN)
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO] ============================================================
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO] 🔎 DISCOVERING TEST CASES FROM 'test_data' DIRECTORY
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO] ==================================================
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO] Found 15 test cases to run.
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO]
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] --- Test Case 1/15: brusselator @ Noise 0.0e+00 ---
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO]   Observable: X(t)
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:10 [INFO] PYTHON[ERR] INFO:2025-07-01 11:34:10,893:jax._src.xla_bridge:752: Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [INFO] Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+2025-07-01 11:34:10 [INFO] PYTHON[ERR] WARNING:2025-07-01 11:34:10,894:jax._src.xla_bridge:794: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+2025-07-01 11:34:10 [INFO] PYTHON[OUT] 2025-07-01 11:34:10 [WARNING] An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+2025-07-01 11:34:16 [INFO] PYTHON[OUT] 2025-07-01 11:34:16 [INFO]     ✓ GP_RBF_Iso                completed in 5.569s
+2025-07-01 11:34:16 [INFO] PYTHON[OUT] 2025-07-01 11:34:16 [INFO]   Observable: Y(t)
+2025-07-01 11:34:16 [INFO] PYTHON[OUT] 2025-07-01 11:34:16 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:18 [INFO] PYTHON[OUT] 2025-07-01 11:34:18 [INFO]     ✓ GP_RBF_Iso                completed in 1.802s
+2025-07-01 11:34:18 [INFO] PYTHON[OUT] 2025-07-01 11:34:18 [INFO]
+2025-07-01 11:34:18 [INFO] PYTHON[OUT] --- Test Case 2/15: brusselator @ Noise 1.0e-06 ---
+2025-07-01 11:34:18 [INFO] PYTHON[OUT] 2025-07-01 11:34:18 [INFO]   Observable: X(t)
+2025-07-01 11:34:18 [INFO] PYTHON[OUT] 2025-07-01 11:34:18 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:20 [INFO] PYTHON[OUT] 2025-07-01 11:34:20 [INFO]     ✓ GP_RBF_Iso                completed in 1.951s
+2025-07-01 11:34:20 [INFO] PYTHON[OUT] 2025-07-01 11:34:20 [INFO]   Observable: Y(t)
+2025-07-01 11:34:20 [INFO] PYTHON[OUT] 2025-07-01 11:34:20 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:22 [INFO] PYTHON[OUT] 2025-07-01 11:34:22 [INFO]     ✓ GP_RBF_Iso                completed in 1.884s
+2025-07-01 11:34:22 [INFO] PYTHON[OUT] 2025-07-01 11:34:22 [INFO]
+2025-07-01 11:34:22 [INFO] PYTHON[OUT] --- Test Case 3/15: brusselator @ Noise 1.0e-03 ---
+2025-07-01 11:34:22 [INFO] PYTHON[OUT] 2025-07-01 11:34:22 [INFO]   Observable: X(t)
+2025-07-01 11:34:22 [INFO] PYTHON[OUT] 2025-07-01 11:34:22 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:24 [INFO] PYTHON[OUT] 2025-07-01 11:34:24 [INFO]     ✓ GP_RBF_Iso                completed in 2.007s
+2025-07-01 11:34:24 [INFO] PYTHON[OUT] 2025-07-01 11:34:24 [INFO]   Observable: Y(t)
+2025-07-01 11:34:24 [INFO] PYTHON[OUT] 2025-07-01 11:34:24 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:25 [INFO] PYTHON[OUT] 2025-07-01 11:34:25 [INFO]     ✓ GP_RBF_Iso                completed in 1.789s
+2025-07-01 11:34:25 [INFO] PYTHON[OUT] 2025-07-01 11:34:25 [INFO]
+2025-07-01 11:34:25 [INFO] PYTHON[OUT] --- Test Case 4/15: fitzhugh_nagumo @ Noise 0.0e+00 ---
+2025-07-01 11:34:25 [INFO] PYTHON[OUT] 2025-07-01 11:34:25 [INFO]   Observable: V(t)
+2025-07-01 11:34:25 [INFO] PYTHON[OUT] 2025-07-01 11:34:25 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:27 [INFO] PYTHON[OUT] 2025-07-01 11:34:27 [INFO]     ✓ GP_RBF_Iso                completed in 1.740s
+2025-07-01 11:34:27 [INFO] PYTHON[OUT] 2025-07-01 11:34:27 [INFO]
+2025-07-01 11:34:27 [INFO] PYTHON[OUT] --- Test Case 5/15: fitzhugh_nagumo @ Noise 1.0e-06 ---
+2025-07-01 11:34:27 [INFO] PYTHON[OUT] 2025-07-01 11:34:27 [INFO]   Observable: V(t)
+2025-07-01 11:34:27 [INFO] PYTHON[OUT] 2025-07-01 11:34:27 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:29 [INFO] PYTHON[OUT] 2025-07-01 11:34:29 [INFO]     ✓ GP_RBF_Iso                completed in 1.606s
+2025-07-01 11:34:29 [INFO] PYTHON[OUT] 2025-07-01 11:34:29 [INFO]
+2025-07-01 11:34:29 [INFO] PYTHON[OUT] --- Test Case 6/15: fitzhugh_nagumo @ Noise 1.0e-03 ---
+2025-07-01 11:34:29 [INFO] PYTHON[OUT] 2025-07-01 11:34:29 [INFO]   Observable: V(t)
+2025-07-01 11:34:29 [INFO] PYTHON[OUT] 2025-07-01 11:34:29 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:30 [INFO] PYTHON[OUT] 2025-07-01 11:34:30 [INFO]     ✓ GP_RBF_Iso                completed in 1.710s
+2025-07-01 11:34:30 [INFO] PYTHON[OUT] 2025-07-01 11:34:30 [INFO]
+2025-07-01 11:34:30 [INFO] PYTHON[OUT] --- Test Case 7/15: lv_periodic @ Noise 0.0e+00 ---
+2025-07-01 11:34:30 [INFO] PYTHON[OUT] 2025-07-01 11:34:30 [INFO]   Observable: r(t)
+2025-07-01 11:34:30 [INFO] PYTHON[OUT] 2025-07-01 11:34:30 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:32 [INFO] PYTHON[OUT] 2025-07-01 11:34:32 [INFO]     ✓ GP_RBF_Iso                completed in 1.837s
+2025-07-01 11:34:32 [INFO] PYTHON[OUT] 2025-07-01 11:34:32 [INFO]
+2025-07-01 11:34:32 [INFO] PYTHON[OUT] --- Test Case 8/15: lv_periodic @ Noise 1.0e-06 ---
+2025-07-01 11:34:32 [INFO] PYTHON[OUT] 2025-07-01 11:34:32 [INFO]   Observable: r(t)
+2025-07-01 11:34:32 [INFO] PYTHON[OUT] 2025-07-01 11:34:32 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:34 [INFO] PYTHON[OUT] 2025-07-01 11:34:34 [INFO]     ✓ GP_RBF_Iso                completed in 1.715s
+2025-07-01 11:34:34 [INFO] PYTHON[OUT] 2025-07-01 11:34:34 [INFO]
+2025-07-01 11:34:34 [INFO] PYTHON[OUT] --- Test Case 9/15: lv_periodic @ Noise 1.0e-03 ---
+2025-07-01 11:34:34 [INFO] PYTHON[OUT] 2025-07-01 11:34:34 [INFO]   Observable: r(t)
+2025-07-01 11:34:34 [INFO] PYTHON[OUT] 2025-07-01 11:34:34 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:36 [INFO] PYTHON[OUT] 2025-07-01 11:34:36 [INFO]     ✓ GP_RBF_Iso                completed in 1.842s
+2025-07-01 11:34:36 [INFO] PYTHON[OUT] 2025-07-01 11:34:36 [INFO]
+2025-07-01 11:34:36 [INFO] PYTHON[OUT] --- Test Case 10/15: seir @ Noise 0.0e+00 ---
+2025-07-01 11:34:36 [INFO] PYTHON[OUT] 2025-07-01 11:34:36 [INFO]   Observable: In(t)
+2025-07-01 11:34:36 [INFO] PYTHON[OUT] 2025-07-01 11:34:36 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:38 [INFO] PYTHON[OUT] 2025-07-01 11:34:38 [INFO]     ✓ GP_RBF_Iso                completed in 2.149s
+2025-07-01 11:34:38 [INFO] PYTHON[OUT] 2025-07-01 11:34:38 [INFO]   Observable: N(t)
+2025-07-01 11:34:38 [INFO] PYTHON[OUT] 2025-07-01 11:34:38 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] WARNING: GP fit failed for GP_RBF_Iso. Reason: Optimizer failed: ABNORMAL:
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] WARNING: Derivatives for GP_RBF_Iso could not be computed (unsupported kernel or fit failed). Returning NaNs.
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] 2025-07-01 11:34:39 [INFO]     ✓ GP_RBF_Iso                completed in 1.041s
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] 2025-07-01 11:34:39 [INFO]
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] --- Test Case 11/15: seir @ Noise 1.0e-06 ---
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] 2025-07-01 11:34:39 [INFO]   Observable: In(t)
+2025-07-01 11:34:39 [INFO] PYTHON[OUT] 2025-07-01 11:34:39 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:41 [INFO] PYTHON[OUT] 2025-07-01 11:34:41 [INFO]     ✓ GP_RBF_Iso                completed in 2.275s
+2025-07-01 11:34:41 [INFO] PYTHON[OUT] 2025-07-01 11:34:41 [INFO]   Observable: N(t)
+2025-07-01 11:34:41 [INFO] PYTHON[OUT] 2025-07-01 11:34:41 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:43 [INFO] PYTHON[OUT] 2025-07-01 11:34:43 [INFO]     ✓ GP_RBF_Iso                completed in 2.112s
+2025-07-01 11:34:43 [INFO] PYTHON[OUT] 2025-07-01 11:34:43 [INFO]
+2025-07-01 11:34:43 [INFO] PYTHON[OUT] --- Test Case 12/15: seir @ Noise 1.0e-03 ---
+2025-07-01 11:34:43 [INFO] PYTHON[OUT] 2025-07-01 11:34:43 [INFO]   Observable: In(t)
+2025-07-01 11:34:43 [INFO] PYTHON[OUT] 2025-07-01 11:34:43 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:46 [INFO] PYTHON[OUT] 2025-07-01 11:34:46 [INFO]     ✓ GP_RBF_Iso                completed in 2.164s
+2025-07-01 11:34:46 [INFO] PYTHON[OUT] 2025-07-01 11:34:46 [INFO]   Observable: N(t)
+2025-07-01 11:34:46 [INFO] PYTHON[OUT] 2025-07-01 11:34:46 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:48 [INFO] PYTHON[OUT] 2025-07-01 11:34:48 [INFO]     ✓ GP_RBF_Iso                completed in 1.926s
+2025-07-01 11:34:48 [INFO] PYTHON[OUT] 2025-07-01 11:34:48 [INFO]
+2025-07-01 11:34:48 [INFO] PYTHON[OUT] --- Test Case 13/15: vanderpol @ Noise 0.0e+00 ---
+2025-07-01 11:34:48 [INFO] PYTHON[OUT] 2025-07-01 11:34:48 [INFO]   Observable: x1(t)
+2025-07-01 11:34:48 [INFO] PYTHON[OUT] 2025-07-01 11:34:48 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:49 [INFO] PYTHON[OUT] 2025-07-01 11:34:49 [INFO]     ✓ GP_RBF_Iso                completed in 1.677s
+2025-07-01 11:34:49 [INFO] PYTHON[OUT] 2025-07-01 11:34:49 [INFO]   Observable: x2(t)
+2025-07-01 11:34:49 [INFO] PYTHON[OUT] 2025-07-01 11:34:49 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:51 [INFO] PYTHON[OUT] 2025-07-01 11:34:51 [INFO]     ✓ GP_RBF_Iso                completed in 1.946s
+2025-07-01 11:34:51 [INFO] PYTHON[OUT] 2025-07-01 11:34:51 [INFO]
+2025-07-01 11:34:51 [INFO] PYTHON[OUT] --- Test Case 14/15: vanderpol @ Noise 1.0e-06 ---
+2025-07-01 11:34:51 [INFO] PYTHON[OUT] 2025-07-01 11:34:51 [INFO]   Observable: x1(t)
+2025-07-01 11:34:51 [INFO] PYTHON[OUT] 2025-07-01 11:34:51 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:52 [INFO] PYTHON[OUT] WARNING: GP fit failed for GP_RBF_Iso. Reason: Optimizer failed: ABNORMAL:
+2025-07-01 11:34:52 [INFO] PYTHON[OUT] WARNING: Derivatives for GP_RBF_Iso could not be computed (unsupported kernel or fit failed). Returning NaNs.
+2025-07-01 11:34:52 [INFO] PYTHON[OUT] 2025-07-01 11:34:52 [INFO]     ✓ GP_RBF_Iso                completed in 1.292s
+2025-07-01 11:34:52 [INFO] PYTHON[OUT] 2025-07-01 11:34:52 [INFO]   Observable: x2(t)
+2025-07-01 11:34:52 [INFO] PYTHON[OUT] 2025-07-01 11:34:52 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:54 [INFO] PYTHON[OUT] 2025-07-01 11:34:54 [INFO]     ✓ GP_RBF_Iso                completed in 1.826s
+2025-07-01 11:34:54 [INFO] PYTHON[OUT] 2025-07-01 11:34:54 [INFO]
+2025-07-01 11:34:54 [INFO] PYTHON[OUT] --- Test Case 15/15: vanderpol @ Noise 1.0e-03 ---
+2025-07-01 11:34:54 [INFO] PYTHON[OUT] 2025-07-01 11:34:54 [INFO]   Observable: x1(t)
+2025-07-01 11:34:54 [INFO] PYTHON[OUT] 2025-07-01 11:34:54 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:56 [INFO] PYTHON[OUT] 2025-07-01 11:34:56 [INFO]     ✓ GP_RBF_Iso                completed in 1.710s
+2025-07-01 11:34:56 [INFO] PYTHON[OUT] 2025-07-01 11:34:56 [INFO]   Observable: x2(t)
+2025-07-01 11:34:56 [INFO] PYTHON[OUT] 2025-07-01 11:34:56 [INFO]  (Using 1 configured methods)
+2025-07-01 11:34:58 [INFO] PYTHON[OUT] 2025-07-01 11:34:58 [INFO]     ✓ GP_RBF_Iso                completed in 1.859s
+2025-07-01 11:34:58 [INFO] PYTHON[OUT] 2025-07-01 11:34:58 [INFO]
+2025-07-01 11:34:58 [INFO] PYTHON[OUT] 🎉 FULL PYTHON BENCHMARK COMPLETE!
+2025-07-01 11:34:58 [INFO] PYTHON[OUT] 2025-07-01 11:34:58 [INFO] 📁 Raw Python results saved to: results/python_raw_benchmark.csv
+2025-07-01 11:34:58 [INFO] PYTHON[OUT] 2025-07-01 11:34:58 [INFO] 🎉 Python benchmark completed successfully in 47.5 seconds (0.8 minutes)
+2025-07-01 11:34:58 [INFO] PYTHON[OUT] 2025-07-01 11:34:58 [INFO] 📝 Full log saved to: unified_analysis/python_benchmark_20250701_113410.log
+2025-07-01 11:34:58 [INFO] ✅ Python benchmark completed successfully in 49.7 seconds
+2025-07-01 11:34:58 [INFO] 
+📊 Creating unified analysis...
+2025-07-01 11:34:58 [INFO] Command: python3 create_unified_comparison.py
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] WARNING: matplotlib or seaborn not found. Skipping plot generation.
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 🔍 LOADING & FORMATTING RAW BENCHMARK RESULTS
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] ==================================================
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] Loading Python results from: results/python_raw_benchmark.csv
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] Loading Julia results from: results/julia_raw_benchmark.csv
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] Formatted dataset: 576 rows
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] Methods: ['AAA_Julia', 'GPR_Julia', 'GP_RBF_Iso_Python', 'JuliaAAALS_Julia']
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 📊 CREATING UNIFIED ANALYSIS
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] ==================================================
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 📋 Saving master data table to: unified_analysis/RAW_MASTER_TABLE.csv
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] Skipping plot generation.
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 🎉 UNIFIED ANALYSIS COMPLETE!
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 📁 All results in: unified_analysis/
+2025-07-01 11:34:59 [INFO] ANALYSIS[OUT] 📊 The main file you requested is: unified_analysis/RAW_MASTER_TABLE.csv
+2025-07-01 11:34:59 [INFO] ✅ Unified analysis completed successfully in 0.5 seconds
+2025-07-01 11:34:59 [INFO] 
+==================================================
+2025-07-01 11:34:59 [INFO] 📋 BENCHMARK SUMMARY
+2025-07-01 11:34:59 [INFO] Julia benchmark: ✅ SUCCESS
+2025-07-01 11:34:59 [INFO] Python benchmark: ✅ SUCCESS
+2025-07-01 11:34:59 [INFO] Unified analysis: ✅ SUCCESS
+2025-07-01 11:34:59 [INFO] Total runtime: 285.8 seconds (4.8 minutes)
+2025-07-01 11:34:59 [INFO] 
+🎉 ALL BENCHMARKS COMPLETED SUCCESSFULLY!
+2025-07-01 11:34:59 [INFO] 📁 Results available in unified_analysis/
+2025-07-01 11:34:59 [INFO] 📝 Full log: unified_analysis/benchmark_run_20250701_113013.log

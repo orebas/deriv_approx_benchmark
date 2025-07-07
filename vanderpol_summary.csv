@@ -1,0 +1,7 @@
+metric,value
+GPR_used_fallback,0.0
+function_rmse,5.007785797444697e-7
+d3_rmse,23.462073403740682
+max_d3_error,86.96362093919403
+mean_d3_error,12.579425473758814
+std_d3_error,19.854170289096114

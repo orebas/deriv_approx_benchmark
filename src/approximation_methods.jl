@@ -280,19 +280,24 @@ function create_aaa_approximation(t, y, config::BenchmarkConfig; high_precision=
         for m in 1:min(config.aaa_max_degree, length(t) ÷ 2)
             tol = tol / 2.0
             
-            # Create approximation
-            approx = BaryRational.aaa(t, y_normalized, verbose=false, tol=tol)
-            
-            # Calculate BIC
-            residuals = y_normalized .- [BaryRational.evaluate(approx, x) for x in t]
-            ssr = sum(abs2, residuals)
-            k = 2 * length(approx.x)  # Number of parameters
-            n = length(t)
-            bic = k * log(n) + n * log(ssr / n + 1e-100)
-            
-            if bic < best_bic
-                best_bic = bic
-                best_approx = approx
+            try
+                # Create approximation
+                approx = BaryRational.aaa(t, y_normalized, verbose=false, tol=tol)
+                
+                # Calculate BIC
+                residuals = y_normalized .- [approx(x) for x in t]  # AAA approximations are directly callable
+                ssr = sum(abs2, residuals)
+                k = 2 * length(approx.x)  # Number of parameters
+                n = length(t)
+                bic = k * log(n) + n * log(ssr / n + 1e-100)
+                
+                if bic < best_bic
+                    best_bic = bic
+                    best_approx = approx
+                end
+            catch e
+                @debug "AAA_lowpres failed at m=$m, tol=$tol: $e"
+                continue  # Try next iteration
             end
         end
         
@@ -346,7 +351,7 @@ function create_bspline_approximation(t, y, config::BenchmarkConfig)
     
     # Create callable function
     function spline_func(x)
-        return evaluate(spl, x)
+        return spl(x)  # Spline1D objects are directly callable
     end
     
     # Override nth_deriv_at for better performance with splines
@@ -447,7 +452,7 @@ function create_tvdiff_approximation(t, y, config::BenchmarkConfig)
     # Create callable function with robust evaluation
     function tvdiff_func(x)
         try
-            return evaluate(splines[0], x)
+            return splines[0](x)  # Spline1D objects are directly callable
         catch e
             @warn "TVDiff evaluation failed at $x: $e"
             return NaN
@@ -458,7 +463,7 @@ function create_tvdiff_approximation(t, y, config::BenchmarkConfig)
     function tvdiff_nth_deriv_at(n::Int, x::Real)
         try
             if n <= max_order && haskey(splines, n)
-                return evaluate(splines[n], x)
+                return splines[n](x)  # Spline1D objects are directly callable
             else
                 # For orders beyond what we computed, return NaN rather than crash
                 if n <= config.derivative_orders

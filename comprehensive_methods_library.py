@@ -96,7 +96,7 @@ class CubicSplineApproximator(DerivativeApproximator):
 class UnivariateSplineApproximator(DerivativeApproximator):
     """Univariate spline with smoothing (scipy)"""
     
-    def __init__(self, t, y, name="UnivariateSpline", s=None, k=3):
+    def __init__(self, t, y, name="UnivariateSpline", s=None, k=8):
         super().__init__(t, y, name)
         self.max_derivative_supported = 7
         self.s = s  # Smoothing factor
